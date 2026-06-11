@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combo Guard. Telegram moderation for crypto groups.</title>
+<meta name="description" content="Combo Guard screens every join, reads every image, catches impersonators, and shares confirmed bans across every group it guards.">
+<meta property="og:title" content="Combo Guard. Keeping the gates.">
+<meta property="og:description" content="Telegram moderation built for crypto groups: portal screening, image OCR, impersonation detection, and a shared global banlist.">
+<meta property="og:image" content="assets/logo.png?v=3">
+<link rel="icon" type="image/png" href="assets/logo.png?v=3">
+<style>
+/* ============================================================
+   Combo Guard landing page
+   Theme: dark only (locked to the brand: bronze griffin on near-black)
+   Accent: bronze, extracted from the logo. One accent for the whole page.
+   Radius rule: buttons are pills, panels/tiles are 16px, small chips 10px.
+   ============================================================ */
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-400.woff2') format('woff2');font-weight:400;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-500.woff2') format('woff2');font-weight:500;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-600.woff2') format('woff2');font-weight:600;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-700.woff2') format('woff2');font-weight:700;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-800.woff2') format('woff2');font-weight:800;font-display:swap;}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-400.woff2') format('woff2');font-weight:400;font-display:swap;}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-500.woff2') format('woff2');font-weight:500;font-display:swap;}
+
+:root{
+  --bg:#0d0c0a;
+  --panel:#15130f;
+  --panel-2:#1b1813;
+  --line:rgba(233,224,205,.10);
+  --line-strong:rgba(233,224,205,.16);
+  --text:#ece7db;
+  --muted:#a59d8c;
+  --faint:#7d766a;
+  --accent:#c99750;
+  --accent-bright:#e4ba7c;
+  --accent-ink:#1b1206;
+  --r-panel:16px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:84px;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;
+  line-height:1.6;
+  -webkit-font-smoothing:antialiased;
+  overflow-x:hidden;
+}
+::selection{background:rgba(201,151,80,.32);}
+a{color:inherit;}
+img{display:block;max-width:100%;}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+section{padding:104px 0;}
+@media(max-width:768px){section{padding:72px 0;}}
+
+h2{
+  font-size:clamp(1.9rem,3.6vw,2.7rem);
+  font-weight:700;
+  letter-spacing:-.02em;
+  line-height:1.12;
+}
+.section-intro{
+  color:var(--muted);
+  max-width:62ch;
+  margin-top:16px;
+}
+
+.ph{width:22px;height:22px;flex:none;}
+
+/* ---------- nav ---------- */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;
+  height:68px;
+  display:flex;align-items:center;
+  border-bottom:1px solid transparent;
+  transition:background .3s var(--ease),border-color .3s var(--ease);
+}
+.nav.solid{
+  background:rgba(13,12,10,.86);
+  -webkit-backdrop-filter:blur(14px);
+  backdrop-filter:blur(14px);
+  border-bottom-color:var(--line);
+}
+.nav-inner{
+  width:100%;max-width:1180px;margin:0 auto;padding:0 24px;
+  display:flex;align-items:center;gap:28px;
+}
+.brand{
+  display:flex;align-items:center;gap:11px;
+  font-weight:700;font-size:1.06rem;letter-spacing:-.01em;
+  text-decoration:none;margin-right:auto;
+  white-space:nowrap;
+}
+@media(max-width:440px){.brand-name{display:none;}}
+.brand img{width:34px;height:34px;border-radius:50%;}
+.nav-links{display:flex;gap:26px;}
+.nav-links a{
+  color:var(--muted);text-decoration:none;font-size:.93rem;font-weight:500;
+  transition:color .2s;
+}
+.nav-links a:hover{color:var(--text);}
+@media(max-width:860px){.nav-links{display:none;}}
+
+.btn{
+  display:inline-flex;align-items:center;gap:9px;
+  border-radius:999px;
+  font-weight:600;font-size:.95rem;
+  text-decoration:none;
+  padding:12px 24px;
+  transition:transform .2s var(--ease),background .2s,border-color .2s;
+  white-space:nowrap;
+}
+.btn:hover{transform:translateY(-1px);}
+.btn:active{transform:scale(.98);}
+.btn-primary{background:var(--accent);color:var(--accent-ink);}
+.btn-primary:hover{background:var(--accent-bright);}
+.btn-primary .ph{width:19px;height:19px;}
+.btn-ghost{
+  border:1px solid var(--line-strong);color:var(--text);
+}
+.btn-ghost:hover{border-color:rgba(233,224,205,.34);}
+.btn-sm{padding:9px 18px;font-size:.9rem;}
+
+/* ---------- hero ---------- */
+.hero{
+  min-height:100dvh;
+  display:flex;align-items:center;
+  padding:96px 0 64px;
+  position:relative;
+}
+.hero::before{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:
+    radial-gradient(900px 540px at 78% 30%,rgba(201,151,80,.10),transparent 62%),
+    radial-gradient(700px 500px at 8% 88%,rgba(201,151,80,.05),transparent 60%);
+}
+.hero-grid{
+  display:grid;grid-template-columns:1.2fr .8fr;
+  align-items:center;gap:56px;position:relative;
+}
+.hero h1{
+  font-size:clamp(2.1rem,3.6vw,2.95rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1.08;
+  text-wrap:balance;
+}
+.hero h1 .accent{color:var(--accent-bright);}
+.hero-sub{
+  color:var(--muted);
+  font-size:1.13rem;
+  max-width:46ch;
+  margin:22px 0 34px;
+}
+.hero-ctas{display:flex;gap:14px;flex-wrap:wrap;}
+.hero-art{position:relative;display:flex;justify-content:center;}
+.hero-orb{
+  width:min(370px,80vw);aspect-ratio:1;
+  border-radius:50%;
+  overflow:hidden;
+  border:1px solid rgba(201,151,80,.30);
+  box-shadow:0 30px 90px rgba(0,0,0,.55),0 0 0 14px rgba(201,151,80,.05);
+  position:relative;
+}
+.hero-orb video{
+  width:100%;height:100%;
+  object-fit:cover;
+  transform:scale(1.05);
+  display:block;
+}
+.hero-orb .orb-static{display:none;width:100%;height:100%;}
+@media (prefers-reduced-motion: reduce){
+  .hero-orb video{display:none;}
+  .hero-orb .orb-static{display:block;}
+}
+@media(max-width:900px){
+  .hero{padding-top:110px;}
+  .hero-grid{grid-template-columns:1fr;gap:44px;}
+  .hero-art{order:-1;}
+  .hero-orb{width:min(250px,62vw);}
+}
+
+/* ---------- specimen wall ---------- */
+.specimens{
+  margin-top:54px;
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:14px;
+}
+.spec{
+  border:1px solid var(--line);
+  border-radius:var(--r-panel);
+  background:var(--panel);
+  padding:26px;
+  display:flex;flex-direction:column;gap:14px;
+  transition:transform .35s var(--ease),border-color .35s;
+}
+.spec:hover{transform:translateY(-3px);border-color:rgba(201,151,80,.34);}
+.spec-1{grid-column:span 4;}
+.spec-2{grid-column:span 2;}
+.spec-3{grid-column:span 2;}
+.spec-4{grid-column:span 2;}
+.spec-5{grid-column:span 2;}
+.spec-6{grid-column:span 6;flex-direction:row;align-items:center;gap:28px;}
+.spec-1{background:linear-gradient(135deg,#1d1812 0%,var(--panel) 60%);}
+.spec-4{background:linear-gradient(160deg,rgba(201,151,80,.12),var(--panel) 65%);}
+.spec-6{background:linear-gradient(90deg,var(--panel) 30%,#1a150e 100%);}
+.spec-sample{
+  font-size:1.06rem;
+  line-height:1.45;
+  text-decoration:line-through;
+  text-decoration-color:rgba(201,151,80,.75);
+  text-decoration-thickness:2px;
+  color:#d8d2c4;
+  word-break:break-word;
+}
+.spec-1 .spec-sample{font-size:1.3rem;}
+.spec-6 .spec-sample{flex:1;margin:0;}
+.spec-note{color:var(--muted);font-size:.92rem;line-height:1.55;}
+.spec-6 .spec-note{flex:1;}
+.spec-tag{
+  align-self:flex-start;
+  font-size:.72rem;font-weight:500;
+  letter-spacing:.04em;
+  color:var(--accent-bright);
+  border:1px solid rgba(201,151,80,.35);
+  border-radius:10px;
+  padding:3px 10px;
+}
+@media(max-width:900px){
+  .specimens{grid-template-columns:1fr 1fr;}
+  .spec{grid-column:span 2 !important;}
+  .spec-6{flex-direction:column;align-items:flex-start;gap:14px;}
+}
+
+/* ---------- defense layers ---------- */
+.layers{
+  margin-top:58px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:54px 64px;
+}
+.layer{border-top:1px solid var(--line-strong);padding-top:26px;}
+.layer-head{display:flex;align-items:center;gap:12px;margin-bottom:12px;}
+.layer-head .ph{color:var(--accent);width:26px;height:26px;}
+.layer h3{font-size:1.3rem;font-weight:600;letter-spacing:-.01em;}
+.layer p{color:var(--muted);font-size:.98rem;}
+@media(max-width:768px){.layers{grid-template-columns:1fr;gap:40px;}}
+
+/* ---------- watchtower ---------- */
+.watch{
+  display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;
+}
+.watch-copy p{color:var(--muted);margin-top:16px;max-width:54ch;}
+.watch-points{margin-top:28px;display:flex;flex-direction:column;gap:16px;}
+.watch-point{display:flex;gap:14px;align-items:flex-start;}
+.watch-point .ph{color:var(--accent);margin-top:3px;}
+.watch-point strong{font-weight:600;}
+.watch-point span{color:var(--muted);}
+.report{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-panel);
+  padding:34px 36px;
+  font-family:'JetBrains Mono',monospace;
+  font-size:.9rem;
+  line-height:2.05;
+  color:#cfc8b8;
+  position:relative;
+  overflow:hidden;
+}
+.report::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(420px 220px at 100% 0%,rgba(201,151,80,.10),transparent 70%);
+}
+.report-title{
+  color:var(--accent-bright);font-weight:500;
+  display:block;margin-bottom:10px;font-size:.95rem;
+}
+.report-sig{display:block;margin-top:14px;color:var(--faint);font-style:italic;font-family:'Outfit',sans-serif;}
+@media(max-width:900px){.watch{grid-template-columns:1fr;gap:44px;}}
+
+/* ---------- toolkit ---------- */
+.toolkit{
+  margin-top:54px;
+  display:grid;grid-template-columns:repeat(4,1fr);gap:14px;
+}
+.tool{
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-panel);
+  padding:24px;
+  transition:transform .35s var(--ease),border-color .35s;
+}
+.tool:hover{transform:translateY(-3px);border-color:rgba(233,224,205,.26);}
+.tool .ph{color:var(--accent);width:25px;height:25px;margin-bottom:14px;}
+.tool h3{font-size:1.02rem;font-weight:600;margin-bottom:7px;}
+.tool p{color:var(--muted);font-size:.89rem;line-height:1.55;}
+.tool .mono{font-size:.8rem;color:var(--faint);}
+@media(max-width:1000px){.toolkit{grid-template-columns:1fr 1fr;}}
+@media(max-width:560px){.toolkit{grid-template-columns:1fr;}}
+
+/* ---------- growth ---------- */
+.growth{
+  background:linear-gradient(180deg,var(--panel) 0%,var(--bg) 100%);
+  border-top:1px solid var(--line);
+  border-bottom:1px solid var(--line);
+}
+.growth-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:64px;align-items:center;}
+.growth-copy p{color:var(--muted);margin-top:16px;max-width:54ch;}
+.growth-facts{display:flex;flex-direction:column;gap:0;}
+.gfact{
+  display:flex;align-items:baseline;gap:22px;
+  padding:22px 0;
+}
+.gfact + .gfact{border-top:1px solid var(--line);}
+.gfact .num{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.7rem;color:var(--accent-bright);
+  min-width:170px;
+  white-space:nowrap;
+}
+@media(max-width:560px){
+  .gfact{flex-direction:column;gap:6px;}
+  .gfact .num{min-width:0;}
+}
+.gfact .lbl{color:var(--muted);font-size:.97rem;}
+@media(max-width:900px){.growth-grid{grid-template-columns:1fr;gap:36px;}}
+
+/* ---------- final cta ---------- */
+.final{
+  text-align:center;
+  position:relative;
+  padding:140px 0 130px;
+  overflow:hidden;
+}
+.final::before{
+  content:"";position:absolute;inset:-40%;
+  background:url('assets/logo.png?v=3') center/46% no-repeat;
+  opacity:.05;filter:blur(46px) saturate(1.3);
+  pointer-events:none;
+}
+.final h2{font-size:clamp(2.1rem,4.4vw,3.2rem);font-weight:800;letter-spacing:-.025em;}
+.final p{color:var(--muted);margin:18px auto 36px;max-width:46ch;}
+.final .btn-primary{font-size:1.04rem;padding:15px 32px;}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--line);
+  padding:34px 0;
+}
+.foot{
+  display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+}
+.foot img{width:28px;height:28px;border-radius:50%;}
+.foot-name{font-weight:600;font-size:.95rem;}
+.foot-tag{color:var(--faint);font-size:.9rem;font-style:italic;}
+.foot-link{
+  margin-left:auto;color:var(--muted);font-size:.9rem;text-decoration:none;
+  display:inline-flex;align-items:center;gap:7px;
+}
+.foot-link:hover{color:var(--text);}
+.foot-link .ph{width:17px;height:17px;}
+
+/* ---------- reveal motion ---------- */
+.reveal{opacity:0;transform:translateY(26px);transition:opacity .7s var(--ease),transform .7s var(--ease);transition-delay:calc(var(--i,0)*70ms);}
+.reveal.in{opacity:1;transform:none;}
+.hero .reveal{transition-duration:.9s;}
+
+@media (prefers-reduced-motion: reduce){
+  html{scroll-behavior:auto;}
+  .reveal{opacity:1;transform:none;transition:none;}
+  .btn,.spec,.tool{transition:none;}
+  .btn:hover,.spec:hover,.tool:hover{transform:none;}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <img src="assets/logo.png?v=3" alt="Combo Guard griffin logo">
+      <span class="brand-name">Combo Guard</span>
+    </a>
+    <div class="nav-links">
+      <a href="#catches">What it catches</a>
+      <a href="#defenses">Defenses</a>
+      <a href="#watchtower">Watchtower</a>
+      <a href="#toolkit">Toolkit</a>
+      <a href="#growth">Growth</a>
+      <a href="docs.html">Docs</a>
+    </div>
+    <a class="btn btn-primary btn-sm" href="https://t.me/Combo_Guard_bot?startgroup=true">
+      <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M228.88,26.19a9,9,0,0,0-9.16-1.57L17.06,103.93a14.22,14.22,0,0,0,2.43,27.21L72,141.45V200a15.92,15.92,0,0,0,10,14.83,15.91,15.91,0,0,0,17.51-3.73l25.32-26.26L165,220a15.88,15.88,0,0,0,10.51,4,16.3,16.3,0,0,0,5-.79,15.85,15.85,0,0,0,10.67-11.63L231.77,35A9,9,0,0,0,228.88,26.19Zm-61.14,36L78.15,126.35l-49.6-9.73ZM88,200V152.52l24.79,21.74Zm87.53,8L92.85,135.5l119-85.29Z"/></svg>
+      Add to Telegram
+    </a>
+  </div>
+</nav>
+<div id="nav-sentinel" style="position:absolute;top:0;height:1px;width:1px;"></div>
+
+<header class="hero" id="top">
+  <div class="wrap hero-grid">
+    <div>
+      <h1 class="reveal">You run the group. <span class="accent">The griffin keeps the gates.</span></h1>
+      <p class="hero-sub reveal" style="--i:1">It screens joins, reads images, catches impersonators, and shares every confirmed ban across all the groups it guards.</p>
+      <div class="hero-ctas reveal" style="--i:2">
+        <a class="btn btn-primary" href="https://t.me/Combo_Guard_bot?startgroup=true">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M228.88,26.19a9,9,0,0,0-9.16-1.57L17.06,103.93a14.22,14.22,0,0,0,2.43,27.21L72,141.45V200a15.92,15.92,0,0,0,10,14.83,15.91,15.91,0,0,0,17.51-3.73l25.32-26.26L165,220a15.88,15.88,0,0,0,10.51,4,16.3,16.3,0,0,0,5-.79,15.85,15.85,0,0,0,10.67-11.63L231.77,35A9,9,0,0,0,228.88,26.19Zm-61.14,36L78.15,126.35l-49.6-9.73ZM88,200V152.52l24.79,21.74Zm87.53,8L92.85,135.5l119-85.29Z"/></svg>
+          Add to Telegram
+        </a>
+        <a class="btn btn-ghost" href="#catches">
+          See what it catches
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M200,88V192a8,8,0,0,1-8,8H88a8,8,0,0,1,0-16h84.69L58.34,69.66A8,8,0,0,1,69.66,58.34L184,172.69V88a8,8,0,0,1,16,0Z"/></svg>
+        </a>
+      </div>
+    </div>
+    <div class="hero-art reveal" style="--i:1">
+      <div class="hero-orb">
+        <video autoplay muted loop playsinline poster="assets/logo-hero.webp" aria-label="Bronze griffin statue, the Combo Guard emblem">
+          <source src="assets/griffin.mp4" type="video/mp4">
+        </video>
+        <img class="orb-static" src="assets/logo-hero.webp" alt="Bronze griffin statue, the Combo Guard emblem" width="370" height="370">
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="catches">
+  <div class="wrap">
+    <h2 class="reveal">Scammers got creative.<br>The griffin reads through it.</h2>
+    <p class="section-intro reveal" style="--i:1">Every specimen below is a real pattern the bot blocks today: in message text, display names, image captions, and the text inside images.</p>
+
+    <div class="specimens">
+      <article class="spec spec-1 reveal" style="--i:1">
+        <span class="spec-tag">Unicode disguise</span>
+        <p class="spec-sample">&#119920;&#119917; &#119936;&#119926;&#119932; &#119912;&#119929;&#119916; &#119930;&#119931;&#119920;&#119923;&#119923; &#119919;&#119926;&#119923;&#119913;&#119920;&#119925;&#119918; &#119924;&#119936; &#119931;&#119926;&#119922;&#119916;&#119925; &#119924;&#119916;&#119930;&#119930;&#119912;&#119918;&#119916; &#119924;&#119916;</p>
+        <p class="spec-note">Math-italic letters, fullwidth characters, and other Unicode tricks are normalized back to plain text before matching. The sender is banned and added to the global list.</p>
+      </article>
+
+      <article class="spec spec-2 reveal" style="--i:2">
+        <span class="spec-tag">Spaced letters</span>
+        <p class="spec-sample">A D M I N</p>
+        <p class="spec-note">Display names with spaced-out letters are compacted and checked against 16 restricted role tags like admin, support, and dev.</p>
+      </article>
+
+      <article class="spec spec-3 reveal" style="--i:1">
+        <span class="spec-tag">Holder bait</span>
+        <p class="spec-sample">Holders dm me</p>
+        <p class="spec-note">One of 100+ curated scam phrases and 12 pattern templates, tuned for crypto groups rather than generic profanity.</p>
+      </article>
+
+      <article class="spec spec-4 reveal" style="--i:2">
+        <span class="spec-tag">Lookalike admin</span>
+        <p class="spec-sample">&#1040;lex &verbar; Dev</p>
+        <p class="spec-note">That first letter is Cyrillic. Names are compared against your real admin list with confusables normalized and a fuzzy-match tolerance.</p>
+      </article>
+
+      <article class="spec spec-5 reveal" style="--i:3">
+        <span class="spec-tag">Contract drop</span>
+        <p class="spec-sample mono">0x4f3a&hellip;e91b</p>
+        <p class="spec-note">ETH and Solana addresses are caught in messages, names, and images. Whitelist your own token's address; everything else escalates.</p>
+      </article>
+
+      <article class="spec spec-6 reveal" style="--i:1">
+        <span class="spec-tag">Wallet screenshot</span>
+        <p class="spec-sample mono">Total Balance / Send / Receive / Swap</p>
+        <p class="spec-note">OCR reads every image and video keyframe. Wallet-app screenshots are scored by a weighted model, and known spam media is fingerprinted so a repost means an instant ban.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="defenses">
+  <div class="wrap">
+    <h2 class="reveal">Four layers between<br>a scammer and your members</h2>
+
+    <div class="layers">
+      <div class="layer reveal" style="--i:1">
+        <div class="layer-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232,216H208V40a16,16,0,0,0-16-16H64A16,16,0,0,0,48,40V216H24a8,8,0,0,0,0,16H232a8,8,0,0,0,0-16Zm-40,0H176V40h16ZM64,40h96V216H64Zm80,92a12,12,0,1,1-12-12A12,12,0,0,1,144,132Z"/></svg>
+          <h3>Screen at the door</h3>
+        </div>
+        <p>With portal mode, every join request is pre-screened against the global banlist, restricted name tags, and impersonation checks before anyone gets in. Add an optional math or image captcha for the rest.</p>
+      </div>
+      <div class="layer reveal" style="--i:2">
+        <div class="layer-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,40V80a8,8,0,0,1-16,0V48H176a8,8,0,0,1,0-16h40A8,8,0,0,1,224,40ZM80,208H48V176a8,8,0,0,0-16,0v40a8,8,0,0,0,8,8H80a8,8,0,0,0,0-16Zm136-40a8,8,0,0,0-8,8v32H176a8,8,0,0,0,0,16h40a8,8,0,0,0,8-8V176A8,8,0,0,0,216,168ZM40,88a8,8,0,0,0,8-8V48H80a8,8,0,0,0,0-16H40a8,8,0,0,0-8,8V80A8,8,0,0,0,40,88ZM80,72h96a8,8,0,0,1,8,8v96a8,8,0,0,1-8,8H80a8,8,0,0,1-8-8V80A8,8,0,0,1,80,72Zm8,96h80V88H88Z"/></svg>
+          <h3>Read everything</h3>
+        </div>
+        <p>Text, captions, quoted links, forwarded sources, image OCR, and hashed video keyframes. Renaming yourself mid-session does not help: identity checks run on every message, not just on join.</p>
+      </div>
+      <div class="layer reveal" style="--i:1">
+        <div class="layer-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,128a8,8,0,0,1-8,8H128a8,8,0,0,1,0-16h88A8,8,0,0,1,224,128ZM128,72h88a8,8,0,0,0,0-16H128a8,8,0,0,0,0,16Zm88,112H128a8,8,0,0,0,0,16h88a8,8,0,0,0,0-16ZM82.34,42.34,56,68.69,45.66,58.34A8,8,0,0,0,34.34,69.66l16,16a8,8,0,0,0,11.32,0l32-32A8,8,0,0,0,82.34,42.34Zm0,64L56,132.69,45.66,122.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Zm0,64L56,196.69,45.66,186.34a8,8,0,0,0-11.32,11.32l16,16a8,8,0,0,0,11.32,0l32-32a8,8,0,0,0-11.32-11.32Z"/></svg>
+          <h3>Escalate fairly</h3>
+        </div>
+        <p>Honest members get a warning with a 10-second undo button, then mute, then ban. The ladder is configurable per group, and admins can clear all warnings on a user with one command.</p>
+      </div>
+      <div class="layer reveal" style="--i:2">
+        <div class="layer-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M128,24A104,104,0,1,0,232,128,104.11,104.11,0,0,0,128,24Zm88,104a87.62,87.62,0,0,1-6.4,32.94l-44.7-27.49a15.92,15.92,0,0,0-6.24-2.23l-22.82-3.08a16.11,16.11,0,0,0-16,7.86h-8.72l-3.8-7.86a15.91,15.91,0,0,0-11-8.67l-8-1.73L96.14,104h16.71a16.06,16.06,0,0,0,7.73-2l12.25-6.76a16.62,16.62,0,0,0,3-2.14l26.91-24.34A15.93,15.93,0,0,0,166,49.1l-.36-.65A88.11,88.11,0,0,1,216,128ZM143.31,41.34,152,56.9,125.09,81.24,112.85,88H96.14a16,16,0,0,0-13.88,8l-8.73,15.23L63.38,84.19,74.32,58.32a87.87,87.87,0,0,1,69-17ZM40,128a87.53,87.53,0,0,1,8.54-37.8l11.34,30.27a16,16,0,0,0,11.62,10l21.43,4.61L96.74,143a16.09,16.09,0,0,0,14.4,9h1.48l-7.23,16.23a16,16,0,0,0,2.86,17.37l.14.14L128,205.94l-1.94,10A88.11,88.11,0,0,1,40,128Zm102.58,86.78,1.13-5.81a16.09,16.09,0,0,0-4-13.9,1.85,1.85,0,0,1-.14-.14L120,174.74,133.7,144l22.82,3.08,45.72,28.12A88.18,88.18,0,0,1,142.58,214.78Z"/></svg>
+          <h3>Ban everywhere</h3>
+        </div>
+        <p>High-confidence detections propagate to every guarded group, so a scammer caught once is gone everywhere. Only the bot's own detections feed the list, so a rogue admin cannot poison it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="watchtower">
+  <div class="wrap watch">
+    <div class="watch-copy">
+      <h2 class="reveal">The Watchtower reports every evening</h2>
+      <p class="reveal" style="--i:1">You should not have to scroll back through the day to know what happened. Each evening at 20:00, every active group gets a short digest of the last 24 hours. Quiet groups are skipped instead of spammed with zeroes.</p>
+      <div class="watch-points">
+        <div class="watch-point reveal" style="--i:2">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M96,104a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H104A8,8,0,0,1,96,104Zm8,40h64a8,8,0,0,0,0-16H104a8,8,0,0,0,0,16Zm128,48a32,32,0,0,1-32,32H88a32,32,0,0,1-32-32V64a16,16,0,0,0-32,0c0,5.74,4.83,9.62,4.88,9.66h0A8,8,0,0,1,24,88a7.89,7.89,0,0,1-4.79-1.61h0C18.05,85.54,8,77.61,8,64A32,32,0,0,1,40,32H176a32,32,0,0,1,32,32V168h8a8,8,0,0,1,4.8,1.6C222,170.46,232,178.39,232,192ZM96.26,173.48A8.07,8.07,0,0,1,104,168h88V64a16,16,0,0,0-16-16H67.69A31.71,31.71,0,0,1,72,64V192a16,16,0,0,0,32,0c0-5.74-4.83-9.62-4.88-9.66A7.82,7.82,0,0,1,96.26,173.48ZM216,192a12.58,12.58,0,0,0-3.23-8h-94a26.92,26.92,0,0,1,1.21,8,31.82,31.82,0,0,1-4.29,16H200A16,16,0,0,0,216,192Z"/></svg>
+          <div><strong>Full audit trail.</strong> <span>Route bans, warnings, joins, and setting changes into a private log channel, filtered by category.</span></div>
+        </div>
+        <div class="watch-point reveal" style="--i:3">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M247.31,124.76c-.35-.79-8.82-19.58-27.65-38.41C194.57,61.26,162.88,48,128,48S61.43,61.26,36.34,86.35C17.51,105.18,9,124,8.69,124.76a8,8,0,0,0,0,6.5c.35.79,8.82,19.57,27.65,38.4C61.43,194.74,93.12,208,128,208s66.57-13.26,91.66-38.34c18.83-18.83,27.3-37.61,27.65-38.4A8,8,0,0,0,247.31,124.76ZM128,192c-30.78,0-57.67-11.19-79.93-33.25A133.47,133.47,0,0,1,25,128,133.33,133.33,0,0,1,48.07,97.25C70.33,75.19,97.22,64,128,64s57.67,11.19,79.93,33.25A133.46,133.46,0,0,1,231.05,128C223.84,141.46,192.43,192,128,192Zm0-112a48,48,0,1,0,48,48A48.05,48.05,0,0,0,128,80Zm0,80a32,32,0,1,1,32-32A32,32,0,0,1,128,160Z"/></svg>
+          <div><strong>Owner's control panel.</strong> <span>Bot-wide stats, recent global bans with one-tap unban, and the spam fingerprint database, all from a DM.</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="report reveal" style="--i:2">
+      <span class="report-title">The Watchtower</span>
+      3 bad actors banned<br>
+      7 silenced (5 fresh faces, 2 spammers)<br>
+      4 warnings handed out<br>
+      2 ghosts cleared from the roster<br>
+      12 new arrivals today (was 9 yesterday)
+      <span class="report-sig">Combo Guard, keeping the gates.</span>
+    </div>
+  </div>
+</section>
+
+<section id="toolkit">
+  <div class="wrap">
+    <h2 class="reveal">The rest of the admin toolkit</h2>
+    <p class="section-intro reveal" style="--i:1">Moderation is the core. Around it, the everyday tools a serious group needs, configured per group from one menu.</p>
+
+    <div class="toolkit">
+      <div class="tool reveal" style="--i:1">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M208,32H48A16,16,0,0,0,32,48V208a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V48A16,16,0,0,0,208,32ZM48,48H208v77.38l-24.69-24.7a16,16,0,0,0-22.62,0L53.37,208H48ZM208,208H76l96-96,36,36v60ZM96,120A24,24,0,1,0,72,96,24,24,0,0,0,96,120Zm0-32a8,8,0,1,1-8,8A8,8,0,0,1,96,88Z"/></svg>
+        <h3>Welcome media</h3>
+        <p>Greet new members with text, a photo, or a video, plus your own buttons and name placeholders.</p>
+      </div>
+      <div class="tool reveal" style="--i:2">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,88H175.4l8.47-46.57a8,8,0,0,0-15.74-2.86l-9,49.43H111.4l8.47-46.57a8,8,0,0,0-15.74-2.86L95.14,88H48a8,8,0,0,0,0,16H92.23L83.5,152H32a8,8,0,0,0,0,16H80.6l-8.47,46.57a8,8,0,0,0,6.44,9.3A7.79,7.79,0,0,0,80,224a8,8,0,0,0,7.86-6.57l9-49.43H144.6l-8.47,46.57a8,8,0,0,0,6.44,9.3A7.79,7.79,0,0,0,144,224a8,8,0,0,0,7.86-6.57l9-49.43H208a8,8,0,0,0,0-16H163.77l8.73-48H224a8,8,0,0,0,0-16Zm-76.5,64H99.77l8.73-48h47.73Z"/></svg>
+        <h3>Hashtag menus</h3>
+        <p>Members type <span class="mono">#rules</span> or <span class="mono">#links</span> and get a button menu you composed.</p>
+      </div>
+      <div class="tool reveal" style="--i:3">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M168,112a8,8,0,0,1-8,8H96a8,8,0,0,1,0-16h64A8,8,0,0,1,168,112Zm-8,24H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16Zm72-8A104,104,0,0,1,79.12,219.82L45.07,231.17a16,16,0,0,1-20.24-20.24l11.35-34.05A104,104,0,1,1,232,128Zm-16,0A88,88,0,1,0,51.81,172.06a8,8,0,0,1,.66,6.54L40,216,77.4,203.53a7.85,7.85,0,0,1,2.53-.42,8,8,0,0,1,4,1.08A88,88,0,0,0,216,128Z"/></svg>
+        <h3>Filters</h3>
+        <p>Custom auto-replies triggered by words or patterns, with media and buttons attached.</p>
+      </div>
+      <div class="tool reveal" style="--i:4">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M232,136.66A104.12,104.12,0,1,1,119.34,24,8,8,0,0,1,120.66,40,88.12,88.12,0,1,0,216,135.34,8,8,0,0,1,232,136.66ZM120,72v56a8,8,0,0,0,8,8h56a8,8,0,0,0,0-16H136V72a8,8,0,0,0-16,0Zm40-24a12,12,0,1,0-12-12A12,12,0,0,0,160,48Zm36,24a12,12,0,1,0-12-12A12,12,0,0,0,196,72Zm24,36a12,12,0,1,0-12-12A12,12,0,0,0,220,108Z"/></svg>
+        <h3>Timed messages</h3>
+        <p>Recurring announcements on an interval you set, toggled on and off per post.</p>
+      </div>
+      <div class="tool reveal" style="--i:1">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M240,96a8,8,0,0,1-8,8H216v16a8,8,0,0,1-16,0V104H184a8,8,0,0,1,0-16h16V72a8,8,0,0,1,16,0V88h16A8,8,0,0,1,240,96ZM144,56h8v8a8,8,0,0,0,16,0V56h8a8,8,0,0,0,0-16h-8V32a8,8,0,0,0-16,0v8h-8a8,8,0,0,0,0,16Zm72.77,97a8,8,0,0,1,1.43,8A96,96,0,1,1,95.07,37.8a8,8,0,0,1,10.6,9.06A88.07,88.07,0,0,0,209.14,150.33,8,8,0,0,1,216.77,153Zm-19.39,14.88c-1.79.09-3.59.14-5.38.14A104.11,104.11,0,0,1,88,64c0-1.79,0-3.59.14-5.38A80,80,0,1,0,197.38,167.86Z"/></svg>
+        <h3>Quiet hours</h3>
+        <p>Slow-mode switches on and off automatically inside a time window you define.</p>
+      </div>
+      <div class="tool reveal" style="--i:2">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M235.5,216.81c-22.56-11-35.5-34.58-35.5-64.8V134.73a15.94,15.94,0,0,0-10.09-14.87L165,110a8,8,0,0,1-4.48-10.34l21.32-53a28,28,0,0,0-16.1-37,28.14,28.14,0,0,0-35.82,16,.61.61,0,0,0,0,.12L108.9,79a8,8,0,0,1-10.37,4.49L73.11,73.14A15.89,15.89,0,0,0,55.74,76.8C34.68,98.45,24,123.75,24,152a111.45,111.45,0,0,0,31.18,77.53A8,8,0,0,0,61,232H232a8,8,0,0,0,3.5-15.19ZM67.14,88l25.41,10.3a24,24,0,0,0,31.23-13.45l21-53c2.56-6.11,9.47-9.27,15.43-7a12,12,0,0,1,6.88,15.92L145.69,93.76a24,24,0,0,0,13.43,31.14L184,134.73V152c0,.33,0,.66,0,1L55.77,101.71A108.84,108.84,0,0,1,67.14,88Zm48,128a87.53,87.53,0,0,1-24.34-42,8,8,0,0,0-15.49,4,105.16,105.16,0,0,0,18.36,38H64.44A95.54,95.54,0,0,1,40,152a85.9,85.9,0,0,1,7.73-36.29l137.8,55.12c3,18,10.56,33.48,21.89,45.16Z"/></svg>
+        <h3>Ghost sweeper</h3>
+        <p>Deleted Telegram accounts are cleared from the member list in a daily sweep.</p>
+      </div>
+      <div class="tool reveal" style="--i:3">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M224,48H32A16,16,0,0,0,16,64V88a16,16,0,0,0,16,16v88a16,16,0,0,0,16,16H208a16,16,0,0,0,16-16V104a16,16,0,0,0,16-16V64A16,16,0,0,0,224,48ZM208,192H48V104H208ZM224,88H32V64H224V88ZM96,136a8,8,0,0,1,8-8h48a8,8,0,0,1,0,16H104A8,8,0,0,1,96,136Z"/></svg>
+        <h3>Backup and restore</h3>
+        <p>Export a group's full configuration to a file and import it into any other group.</p>
+      </div>
+      <div class="tool reveal" style="--i:4">
+        <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M208,40H48A16,16,0,0,0,32,56v56c0,52.72,25.52,84.67,46.93,102.19,23.06,18.86,46,25.26,47,25.53a8,8,0,0,0,4.2,0c1-.27,23.91-6.67,47-25.53C198.48,196.67,224,164.72,224,112V56A16,16,0,0,0,208,40Zm0,72c0,37.07-13.66,67.16-40.6,89.42A129.3,129.3,0,0,1,128,223.62a128.25,128.25,0,0,1-38.92-21.81C61.82,179.51,48,149.3,48,112l0-56,160,0ZM82.34,141.66a8,8,0,0,1,11.32-11.32L112,148.69l50.34-50.35a8,8,0,0,1,11.32,11.32l-56,56a8,8,0,0,1-11.32,0Z"/></svg>
+        <h3>Crowd reporting</h3>
+        <p>Members flag spam images with <span class="mono">/report</span>; repeated flags across groups reach the owner for review.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="growth" id="growth">
+  <div class="wrap growth-grid">
+    <div class="growth-copy">
+      <h2 class="reveal">Guards the gate.<br>Grows the crowd.</h2>
+      <p class="reveal" style="--i:1">A built-in referral system turns your members into recruiters. Everyone gets a personal invite link, the bot verifies that invited users actually stick around, and leaderboards keep the campaign competitive.</p>
+      <p class="reveal" style="--i:2">Campaigns come with start and end banners, a results channel for live standings, and manual review tools for borderline referrals.</p>
+    </div>
+    <div class="growth-facts">
+      <div class="gfact reveal" style="--i:1">
+        <span class="num">3 in 24h</span>
+        <span class="lbl">An invited user must post three messages within a day to count as a valid referral.</span>
+      </div>
+      <div class="gfact reveal" style="--i:2">
+        <span class="num">Top 10</span>
+        <span class="lbl">The live campaign leaderboard, one command away for every member.</span>
+      </div>
+      <div class="gfact reveal" style="--i:3">
+        <span class="num">All-time</span>
+        <span class="lbl">Lifetime referral standings persist across campaigns and groups.</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="final">
+  <div class="wrap">
+    <h2 class="reveal">Put the griffin at your gate</h2>
+    <p class="reveal" style="--i:1">Add the bot, grant it admin rights, and open the menu. Protection defaults are on from the first minute.</p>
+    <a class="btn btn-primary reveal" style="--i:2" href="https://t.me/Combo_Guard_bot?startgroup=true">
+      <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M228.88,26.19a9,9,0,0,0-9.16-1.57L17.06,103.93a14.22,14.22,0,0,0,2.43,27.21L72,141.45V200a15.92,15.92,0,0,0,10,14.83,15.91,15.91,0,0,0,17.51-3.73l25.32-26.26L165,220a15.88,15.88,0,0,0,10.51,4,16.3,16.3,0,0,0,5-.79,15.85,15.85,0,0,0,10.67-11.63L231.77,35A9,9,0,0,0,228.88,26.19Zm-61.14,36L78.15,126.35l-49.6-9.73ZM88,200V152.52l24.79,21.74Zm87.53,8L92.85,135.5l119-85.29Z"/></svg>
+      Add to Telegram
+    </a>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap foot">
+    <img src="assets/logo.png?v=3" alt="">
+    <span class="foot-name">Combo Guard</span>
+    <span class="foot-tag">keeping the gates.</span>
+    <a class="foot-link" href="docs.html" style="margin-left:auto;">Docs</a>
+    <a class="foot-link" style="margin-left:0;" href="https://t.me/Combo_Guard_bot">
+      <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M228.88,26.19a9,9,0,0,0-9.16-1.57L17.06,103.93a14.22,14.22,0,0,0,2.43,27.21L72,141.45V200a15.92,15.92,0,0,0,10,14.83,15.91,15.91,0,0,0,17.51-3.73l25.32-26.26L165,220a15.88,15.88,0,0,0,10.51,4,16.3,16.3,0,0,0,5-.79,15.85,15.85,0,0,0,10.67-11.63L231.77,35A9,9,0,0,0,228.88,26.19Zm-61.14,36L78.15,126.35l-49.6-9.73ZM88,200V152.52l24.79,21.74Zm87.53,8L92.85,135.5l119-85.29Z"/></svg>
+      @Combo_Guard_bot
+    </a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Scroll reveals
+  var revealed = document.querySelectorAll('.reveal');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function(entries){
+      entries.forEach(function(e){
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.18, rootMargin: '0px 0px -40px 0px' });
+    revealed.forEach(function(el){ io.observe(el); });
+  } else {
+    revealed.forEach(function(el){ el.classList.add('in'); });
+  }
+
+  // Nav background once the page top scrolls away (sentinel, no scroll listener)
+  var nav = document.getElementById('nav');
+  var sentinel = document.getElementById('nav-sentinel');
+  if ('IntersectionObserver' in window && sentinel) {
+    new IntersectionObserver(function(entries){
+      nav.classList.toggle('solid', !entries[0].isIntersecting);
+    }).observe(sentinel);
+  } else {
+    nav.classList.add('solid');
+  }
+})();
+</script>
+
+</body>
+</html>

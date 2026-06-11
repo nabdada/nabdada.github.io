@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Combo Guard docs. Setup and options.</title>
+<meta name="description" content="How to set up Combo Guard in your Telegram group: protections, portal screening, welcome messages, menus, filters, logging, and the referral system.">
+<link rel="icon" type="image/png" href="assets/logo.png?v=3">
+<style>
+/* Combo Guard docs page. Shares the brand tokens with index.html. */
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-400.woff2') format('woff2');font-weight:400;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-500.woff2') format('woff2');font-weight:500;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-600.woff2') format('woff2');font-weight:600;font-display:swap;}
+@font-face{font-family:'Outfit';src:url('fonts/Outfit-700.woff2') format('woff2');font-weight:700;font-display:swap;}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-400.woff2') format('woff2');font-weight:400;font-display:swap;}
+@font-face{font-family:'JetBrains Mono';src:url('fonts/JetBrainsMono-500.woff2') format('woff2');font-weight:500;font-display:swap;}
+
+:root{
+  --bg:#0d0c0a;
+  --panel:#15130f;
+  --line:rgba(233,224,205,.10);
+  --line-strong:rgba(233,224,205,.16);
+  --text:#ece7db;
+  --muted:#a59d8c;
+  --faint:#7d766a;
+  --accent:#c99750;
+  --accent-bright:#e4ba7c;
+  --accent-ink:#1b1206;
+  --r-panel:16px;
+  --ease:cubic-bezier(.16,1,.3,1);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;scroll-padding-top:96px;}
+body{
+  background:var(--bg);color:var(--text);
+  font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
+  font-size:16px;line-height:1.65;
+  -webkit-font-smoothing:antialiased;
+}
+::selection{background:rgba(201,151,80,.32);}
+a{color:inherit;}
+img{display:block;max-width:100%;}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px;}
+
+/* nav (same as landing) */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:50;height:68px;
+  display:flex;align-items:center;
+  background:rgba(13,12,10,.86);
+  -webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--line);
+}
+.nav-inner{width:100%;max-width:1180px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:28px;}
+.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:1.06rem;text-decoration:none;margin-right:auto;white-space:nowrap;}
+.brand img{width:34px;height:34px;border-radius:50%;}
+@media(max-width:440px){.brand-name{display:none;}}
+.btn{
+  display:inline-flex;align-items:center;gap:9px;border-radius:999px;
+  font-weight:600;font-size:.9rem;text-decoration:none;padding:9px 18px;
+  background:var(--accent);color:var(--accent-ink);
+  transition:transform .2s var(--ease),background .2s;white-space:nowrap;
+}
+.btn:hover{background:var(--accent-bright);transform:translateY(-1px);}
+.btn:active{transform:scale(.98);}
+.btn .ph{width:18px;height:18px;}
+
+/* layout */
+.docs{display:grid;grid-template-columns:230px 1fr;gap:64px;padding:128px 0 96px;}
+@media(max-width:900px){.docs{grid-template-columns:1fr;gap:40px;padding-top:104px;}}
+
+.side{position:sticky;top:100px;align-self:start;display:flex;flex-direction:column;gap:2px;}
+.side a{
+  color:var(--muted);text-decoration:none;font-size:.92rem;font-weight:500;
+  padding:7px 12px;border-left:2px solid var(--line);
+  transition:color .2s,border-color .2s;
+}
+.side a:hover{color:var(--text);}
+.side a.active{color:var(--accent-bright);border-left-color:var(--accent);}
+@media(max-width:900px){
+  .side{position:static;flex-direction:row;flex-wrap:wrap;gap:8px;}
+  .side a{border:1px solid var(--line-strong);border-radius:999px;padding:6px 14px;}
+  .side a.active{border-color:var(--accent);}
+}
+
+/* content */
+.content h1{font-size:clamp(2rem,4vw,2.7rem);font-weight:700;letter-spacing:-.02em;line-height:1.1;}
+.lead{color:var(--muted);margin-top:14px;max-width:64ch;}
+.content section{padding:0;margin-top:72px;scroll-margin-top:96px;}
+.content h2{
+  font-size:1.5rem;font-weight:600;letter-spacing:-.01em;
+  padding-bottom:12px;border-bottom:1px solid var(--line-strong);margin-bottom:20px;
+}
+.content h3{font-size:1.08rem;font-weight:600;margin:26px 0 8px;}
+.content p{color:var(--muted);max-width:70ch;margin-bottom:12px;}
+.content p strong{color:var(--text);font-weight:600;}
+.content ol,.content ul{color:var(--muted);margin:0 0 12px 22px;max-width:68ch;}
+.content li{margin-bottom:7px;}
+.content li strong{color:var(--text);font-weight:600;}
+
+code{
+  font-family:'JetBrains Mono',ui-monospace,monospace;
+  font-size:.86em;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:6px;
+  padding:2px 7px;
+  color:var(--accent-bright);
+  white-space:nowrap;
+}
+
+.note{
+  background:var(--panel);border:1px solid var(--line);border-left:3px solid var(--accent);
+  border-radius:10px;padding:14px 18px;margin:16px 0;
+  color:var(--muted);font-size:.95rem;max-width:70ch;
+}
+.note strong{color:var(--text);}
+
+table{
+  width:100%;border-collapse:collapse;margin:14px 0 8px;
+  font-size:.93rem;
+}
+th{
+  text-align:left;font-weight:600;color:var(--text);
+  padding:10px 14px;border-bottom:1px solid var(--line-strong);
+}
+td{
+  padding:10px 14px;color:var(--muted);
+  border-bottom:1px solid var(--line);
+  vertical-align:top;
+}
+td:first-child{width:42%;}
+td:first-child code{margin:2px 0;display:inline-block;}
+@media(max-width:640px){
+  th,td{padding:9px 8px;}
+}
+
+footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
+.foot{display:flex;align-items:center;gap:14px;flex-wrap:wrap;}
+.foot img{width:28px;height:28px;border-radius:50%;}
+.foot-name{font-weight:600;font-size:.95rem;}
+.foot-tag{color:var(--faint);font-size:.9rem;font-style:italic;}
+.foot a{margin-left:auto;color:var(--muted);font-size:.9rem;text-decoration:none;}
+.foot a:hover{color:var(--text);}
+.foot a + a{margin-left:0;}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="index.html">
+      <img src="assets/logo.png?v=3" alt="Combo Guard griffin logo">
+      <span class="brand-name">Combo Guard</span>
+    </a>
+    <a class="btn" href="https://t.me/Combo_Guard_bot?startgroup=true">
+      <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M228.88,26.19a9,9,0,0,0-9.16-1.57L17.06,103.93a14.22,14.22,0,0,0,2.43,27.21L72,141.45V200a15.92,15.92,0,0,0,10,14.83,15.91,15.91,0,0,0,17.51-3.73l25.32-26.26L165,220a15.88,15.88,0,0,0,10.51,4,16.3,16.3,0,0,0,5-.79,15.85,15.85,0,0,0,10.67-11.63L231.77,35A9,9,0,0,0,228.88,26.19Zm-61.14,36L78.15,126.35l-49.6-9.73ZM88,200V152.52l24.79,21.74Zm87.53,8L92.85,135.5l119-85.29Z"/></svg>
+      Add to Telegram
+    </a>
+  </div>
+</nav>
+
+<div class="wrap docs">
+
+  <aside class="side" id="side">
+    <a href="#start">Getting started</a>
+    <a href="#menu">The control panel</a>
+    <a href="#protections">Protections</a>
+    <a href="#portal">Portal and captcha</a>
+    <a href="#welcome">Welcome messages</a>
+    <a href="#menus">Hashtag menus</a>
+    <a href="#filters">Filters</a>
+    <a href="#timed">Timed messages</a>
+    <a href="#logging">Logging channel</a>
+    <a href="#summary">Daily summary</a>
+    <a href="#referrals">Referral campaigns</a>
+    <a href="#maintenance">Backup and upkeep</a>
+    <a href="#commands">Command reference</a>
+  </aside>
+
+  <main class="content">
+    <h1>Setting up Combo Guard</h1>
+    <p class="lead">Everything you can configure, from the first minute to a fully tuned group. Most options live in one menu; the rest are short commands listed below.</p>
+
+    <section id="start">
+      <h2>Getting started</h2>
+      <ol>
+        <li><strong>Add the bot.</strong> Open <a href="https://t.me/Combo_Guard_bot?startgroup=true"><code>@Combo_Guard_bot</code></a> and pick your group, or add it from your group's member list.</li>
+        <li><strong>Make it an admin.</strong> The bot needs permission to ban users, delete messages, and create invite links. Without admin rights it can see problems but not act on them.</li>
+        <li><strong>Open the menu.</strong> Send <code>/menu</code> in the group, or DM the bot and pick the group from <em>My Connected Groups</em>.</li>
+      </ol>
+      <div class="note"><strong>Protection defaults are on immediately.</strong> Scam phrases, phishing domains, impersonation checks, restricted name tags, and image scanning all run from the moment the bot becomes admin. Everything below is tuning, not required setup.</div>
+    </section>
+
+    <section id="menu">
+      <h2>The control panel</h2>
+      <p>Send <code>/menu</code> in a group (or in DM) to open the per-group control panel. From there you can toggle and configure:</p>
+      <ul>
+        <li><strong>Anti-spam toggles</strong> for each protection type: scam phrases, contract addresses, external links and mentions, forwarded messages, invite-link phrases.</li>
+        <li><strong>Custom restricted words</strong> on top of the built-in list.</li>
+        <li><strong>Allowlists</strong>: your own token's contract address, trusted forward sources, and invite phrases your group actually uses.</li>
+        <li><strong>Restricted name tags</strong>: extend the default list (admin, support, dev, and similar) with your own.</li>
+        <li><strong>Escalation ladder</strong>: how warnings turn into mutes, kicks, and bans.</li>
+        <li><strong>New-member media restriction</strong>: stop fresh joins from posting photos and videos until they have earned it.</li>
+        <li><strong>Quiet hours</strong>: a daily time window where the bot enables Telegram's slow mode automatically and lifts it afterwards.</li>
+        <li><strong>Welcome message, portal, captcha, logging, and daily summary</strong> settings, covered in their own sections below.</li>
+      </ul>
+    </section>
+
+    <section id="protections">
+      <h2>Protections</h2>
+      <p>These run on every message: text, captions, the text inside images, and video keyframes. Display names are re-checked on every message too, so renaming mid-session does not work.</p>
+      <h3>What gets caught</h3>
+      <ul>
+        <li><strong>Scam phrases</strong>: a curated library of crypto-scam lines ("holders dm me", seed-phrase bait, signal sellers) plus pattern templates. Unicode disguises and spaced-out letters are normalized before matching.</li>
+        <li><strong>Phishing domains</strong>: a built-in blocklist enforced in every group, extendable per group with your own restricted words.</li>
+        <li><strong>Contract addresses</strong>: ETH and Solana addresses in messages, names, or images. Whitelist your own project's address in <code>/menu</code>; everything else escalates.</li>
+        <li><strong>Wallet screenshots</strong>: images are read with OCR and scored against a wallet-UI model. Known spam images and videos are fingerprinted, so a repost means an instant ban.</li>
+        <li><strong>Impersonators</strong>: names compared against your real admin list and the group title, with lookalike characters normalized and a fuzzy-match tolerance.</li>
+        <li><strong>Restricted name tags</strong>: joins and renames claiming to be admin, support, dev, and similar roles.</li>
+      </ul>
+      <h3>Warnings and escalation</h3>
+      <p>Lighter offenses earn a warning first. Every warning comes with a 10-second <em>Undo</em> button for the acting admin, and <code>/remove_warn</code> (reply to the user, or pass a user id) clears all active warnings at once. Repeat offenses climb the ladder you configured: warn, mute, kick, ban.</p>
+      <h3>The global banlist</h3>
+      <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+    </section>
+
+    <section id="portal">
+      <h2>Portal and captcha</h2>
+      <p>The portal screens people <em>before</em> they enter, instead of cleaning up after them.</p>
+      <ol>
+        <li>In your group's Telegram settings, enable <strong>Approve New Members</strong>.</li>
+        <li>Create a channel to act as the portal, add the bot to it, and send <code>/id</code> there to get the channel id.</li>
+        <li>Back in the group, send <code>/setportal_channel &lt;channel_id&gt;</code>. Use <code>/unsetportal_channel</code> to turn it off.</li>
+      </ol>
+      <p>Every join request is then checked against the global banlist, restricted name tags, contract addresses in the name, and impersonation of your admins or group name. Clean requests are approved; flagged ones are declined with a short audit note in the portal channel.</p>
+      <h3>Captcha options</h3>
+      <ul>
+        <li><strong>Math challenge</strong>: a small arithmetic prompt the joiner answers in the portal channel.</li>
+        <li><strong>Image captcha</strong>: the joiner types the text shown in an image.</li>
+        <li><strong>Off</strong>: instant approval once the screening passes.</li>
+      </ul>
+      <p>The captcha type and the timeout (default 5 minutes, then the request expires) are set per group in <code>/menu</code>.</p>
+    </section>
+
+    <section id="welcome">
+      <h2>Welcome messages</h2>
+      <p>Greet new members with text, a photo, or a video, configured in <code>/menu</code>. Welcome text supports placeholders:</p>
+      <ul>
+        <li><code>{first_name}</code>, <code>{full_name}</code>, <code>{username}</code>, <code>{group_name}</code></li>
+      </ul>
+      <p>You can attach your own buttons to the welcome message: links, or menu buttons that open in place, with control over which buttons share a row. Media is cached after the first send, so big welcome videos do not slow the bot down.</p>
+    </section>
+
+    <section id="menus">
+      <h2>Hashtag menus</h2>
+      <p>Reusable button menus any member can call up by typing <code>#name</code> in chat. Building one is admin-only:</p>
+      <ul>
+        <li><code>/savemenu &lt;name&gt;</code> as a reply to a message: that message becomes the menu intro.</li>
+        <li><code>/addbutton &lt;menu&gt; &lt;label&gt;|&lt;content&gt;</code> adds a button. Append <code>|same</code> to keep it on the same row as the previous button.</li>
+        <li><code>/menus</code> lists menus, <code>/delbutton</code> and <code>/delmenu</code> remove things.</li>
+      </ul>
+      <p>Typical uses: <code>#rules</code>, <code>#links</code>, <code>#faq</code>, <code>#buy</code>.</p>
+    </section>
+
+    <section id="filters">
+      <h2>Filters</h2>
+      <p>Custom auto-replies. When a message matches a trigger, the bot answers with your configured response: text, image, video, or sticker, with optional buttons.</p>
+      <ul>
+        <li><code>/filter &lt;trigger&gt; &lt;response&gt;</code> creates one. Triggers can be plain words or patterns.</li>
+        <li><code>/filters</code> lists them, <code>/stop &lt;trigger&gt;</code> deletes one, <code>/edit_filter &lt;trigger&gt; &lt;new&gt;</code> updates one.</li>
+        <li><code>/testfilter &lt;trigger&gt;</code> in DM previews the response without posting it in the group.</li>
+      </ul>
+    </section>
+
+    <section id="timed">
+      <h2>Timed messages</h2>
+      <p>Recurring announcements posted on an interval, useful for rules reminders or pinned-info refreshers.</p>
+      <ul>
+        <li><code>/timed_add &lt;minutes&gt; &lt;title&gt;|&lt;text&gt;</code> schedules one.</li>
+        <li><code>/timed_list</code> shows them with their index numbers.</li>
+        <li><code>/timed_remove &lt;idx&gt;</code> deletes, <code>/timed_toggle &lt;idx&gt;</code> pauses and resumes.</li>
+      </ul>
+    </section>
+
+    <section id="logging">
+      <h2>Logging channel</h2>
+      <p>Route a full audit trail into a private channel only your admin team can see.</p>
+      <ol>
+        <li>Create a private channel and add the bot.</li>
+        <li>Send <code>/id</code> in the channel to get its id.</li>
+        <li>In the group, send <code>/setlog &lt;channel_id&gt;</code>. Check with <code>/logchannel</code>, disconnect with <code>/unsetlog</code>.</li>
+      </ol>
+      <p>Each category can be switched on and off with <code>/log &lt;category&gt;</code> and <code>/nolog &lt;category&gt;</code>:</p>
+      <table>
+        <tr><th>Category</th><th>What it records</th></tr>
+        <tr><td><code>settings</code></td><td>Blocklist, welcome, rules, and filter changes</td></tr>
+        <tr><td><code>admin</code></td><td>Bans, mutes, kicks, warnings, manual actions</td></tr>
+        <tr><td><code>user</code></td><td>Joins, leaves, self-kicks</td></tr>
+        <tr><td><code>automated</code></td><td>Every automatic detection: scam text, spam media, contracts, impersonation</td></tr>
+        <tr><td><code>reports</code></td><td>Member <code>/report</code> submissions</td></tr>
+        <tr><td><code>other</code></td><td>Notes, filters, timed-message events</td></tr>
+      </table>
+    </section>
+
+    <section id="summary">
+      <h2>Daily summary</h2>
+      <p>Every evening at 20:00, active groups get a short digest of the last 24 hours: bans, mutes, warnings, cleanup, and new arrivals compared with the day before. Groups with nothing to report are skipped, so quiet days stay quiet. The summary can be disabled per group in <code>/menu</code>.</p>
+    </section>
+
+    <section id="referrals">
+      <h2>Referral campaigns</h2>
+      <p>A built-in growth system: members share personal invite links, and the bot verifies the people they bring actually participate.</p>
+      <h3>Running a campaign (admins)</h3>
+      <ul>
+        <li><code>/setupcampaign</code> starts one and walks you through duration and rewards.</li>
+        <li><code>/setbanner</code> and <code>/setendbanner</code> attach start and end images, set up in DM.</li>
+        <li><code>/setresultschat</code> picks the channel where standings are posted; <code>/lastresult</code> reposts the latest.</li>
+        <li><code>/endcampaign</code> closes it manually. <code>/adminhelp</code> lists all campaign admin commands.</li>
+        <li>Borderline cases can be reviewed with <code>/refdetails</code>, <code>/refstats</code>, and decided with <code>/refvalidate</code> or <code>/refinvalidate</code>.</li>
+      </ul>
+      <h3>Joining in (members)</h3>
+      <ul>
+        <li><code>/ref</code> or <code>/getref</code> gives a personal invite link.</li>
+        <li>An invited user counts as <strong>valid</strong> once they post 3 messages within 24 hours of joining.</li>
+        <li><code>/myref</code> shows personal stats, <code>/refleader</code> the current top 10, <code>/alltimeref</code> the lifetime standings.</li>
+        <li><code>/refrules</code> shows the campaign's payout terms; <code>/refhelp</code> lists the commands.</li>
+      </ul>
+    </section>
+
+    <section id="maintenance">
+      <h2>Backup and upkeep</h2>
+      <ul>
+        <li><code>/backup</code> exports the group's whole configuration (filters, welcome, buttons, logging, timed messages, restrictions) as a file. Reply to that file with <code>/restore</code> in any group to import it.</li>
+        <li><code>/cleandeleted</code> sweeps members whose Telegram accounts were deleted. It can also run automatically once a day, toggled in <code>/menu</code>.</li>
+        <li><code>/report</code>, available to every member as a reply to a spam image, feeds a crowdsourced review queue: repeated flags across groups reach the bot owner.</li>
+      </ul>
+    </section>
+
+    <section id="commands">
+      <h2>Command reference</h2>
+
+      <h3>Everyone</h3>
+      <table>
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td><code>/start</code></td><td>Welcome card in DM with your connected groups</td></tr>
+        <tr><td><code>/help</code></td><td>Command overview</td></tr>
+        <tr><td><code>/id</code></td><td>Show the current chat's id (for portal and log setup)</td></tr>
+        <tr><td><code>/admins</code></td><td>List group admins without pinging them</td></tr>
+        <tr><td><code>/kickme</code></td><td>Leave the group via the bot (rejoining allowed)</td></tr>
+        <tr><td><code>/report</code></td><td>Flag a spam image (reply to it)</td></tr>
+        <tr><td><code>/ref</code> <code>/myref</code> <code>/refleader</code> <code>/alltimeref</code> <code>/refrules</code> <code>/refhelp</code></td><td>Referral links, stats, leaderboards, and rules</td></tr>
+        <tr><td><code>/optin</code> <code>/optout</code></td><td>Subscribe or unsubscribe from bot announcements in DM</td></tr>
+      </table>
+
+      <h3>Group admins</h3>
+      <table>
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td><code>/menu</code></td><td>Open the per-group control panel</td></tr>
+        <tr><td><code>/ban</code></td><td>Reply to a user: delete the message and ban them (this group only)</td></tr>
+        <tr><td><code>/gban &lt;user_id&gt; [reason]</code></td><td>Ban and add to the cross-group banlist</td></tr>
+        <tr><td><code>/mute</code></td><td>Reply to a user: mute them until lifted</td></tr>
+        <tr><td><code>/remove_warn</code></td><td>Clear all active warnings on a user</td></tr>
+        <tr><td><code>/setportal_channel</code> <code>/unsetportal_channel</code></td><td>Connect or disconnect the portal channel</td></tr>
+        <tr><td><code>/setlog</code> <code>/unsetlog</code> <code>/logchannel</code> <code>/log</code> <code>/nolog</code></td><td>Logging channel and categories</td></tr>
+        <tr><td><code>/filter</code> <code>/filters</code> <code>/stop</code> <code>/edit_filter</code> <code>/testfilter</code></td><td>Custom auto-replies</td></tr>
+        <tr><td><code>/timed_add</code> <code>/timed_list</code> <code>/timed_remove</code> <code>/timed_toggle</code></td><td>Recurring messages</td></tr>
+        <tr><td><code>/savemenu</code> <code>/addbutton</code> <code>/delbutton</code> <code>/delmenu</code> <code>/menus</code></td><td>Hashtag menus</td></tr>
+        <tr><td><code>/backup</code> <code>/restore</code></td><td>Export and import group configuration</td></tr>
+        <tr><td><code>/cleandeleted</code></td><td>Remove deleted accounts from the member list</td></tr>
+        <tr><td><code>/setupcampaign</code> <code>/endcampaign</code> <code>/setbanner</code> <code>/setendbanner</code> <code>/setresultschat</code> <code>/lastresult</code> <code>/adminhelp</code></td><td>Referral campaign management</td></tr>
+        <tr><td><code>/refdetails</code> <code>/refstats</code> <code>/refvalidate</code> <code>/refinvalidate</code></td><td>Referral review tools</td></tr>
+      </table>
+
+      <h3>Bot owner</h3>
+      <table>
+        <tr><th>Command</th><th>What it does</th></tr>
+        <tr><td><code>/admin</code></td><td>Owner control panel in DM: stats, recent bans, spam database</td></tr>
+        <tr><td><code>/banlist</code> <code>/unban_global</code></td><td>Inspect the global banlist and lift entries</td></tr>
+        <tr><td><code>/spamhash</code> <code>/unspamhash</code> <code>/spamhashes</code></td><td>Spam image fingerprint database</td></tr>
+        <tr><td><code>/spamvideo</code> <code>/unspamvideo</code> <code>/spamvideos</code></td><td>Spam video fingerprint database</td></tr>
+        <tr><td><code>/broadcast</code></td><td>Message all opted-in DM users, with preview and unsubscribe button</td></tr>
+        <tr><td><code>/setad</code> <code>/clearad</code> <code>/showad</code></td><td>The button shown on daily summaries</td></tr>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap foot">
+    <img src="assets/logo.png?v=3" alt="">
+    <span class="foot-name">Combo Guard</span>
+    <span class="foot-tag">keeping the gates.</span>
+    <a href="index.html">Home</a>
+    <a href="https://t.me/Combo_Guard_bot">@Combo_Guard_bot</a>
+  </div>
+</footer>
+
+<script>
+(function(){
+  // Sidebar active state via IntersectionObserver (no scroll listener)
+  var links = document.querySelectorAll('.side a');
+  var map = {};
+  links.forEach(function(a){ map[a.getAttribute('href').slice(1)] = a; });
+  if (!('IntersectionObserver' in window)) return;
+  var current = null;
+  var io = new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if (e.isIntersecting) {
+        if (current) current.classList.remove('active');
+        current = map[e.target.id];
+        if (current) current.classList.add('active');
+      }
+    });
+  }, { rootMargin: '-20% 0px -70% 0px' });
+  document.querySelectorAll('.content section').forEach(function(s){ io.observe(s); });
+})();
+</script>
+
+</body>
+</html>
