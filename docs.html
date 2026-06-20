@@ -166,6 +166,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#start">Getting started</a>
     <a href="#menu">The control panel</a>
     <a href="#protections">Protections</a>
+    <a href="#prices">Prices and charts</a>
     <a href="#portal">Portal and captcha</a>
     <a href="#welcome">Welcome messages</a>
     <a href="#menus">Hashtag menus</a>
@@ -223,6 +224,31 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <p>Lighter offenses earn a warning first. Every warning comes with a 10-second <em>Undo</em> button for the acting admin, and <code>/remove_warn</code> (reply to the user, or pass a user id) clears all active warnings at once. Repeat offenses climb the ladder you configured: warn, mute, kick, ban.</p>
       <h3>The global banlist</h3>
       <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+    </section>
+
+    <section id="prices">
+      <h2>Prices and charts</h2>
+      <p>Members can pull a live price card or a candlestick chart for any token straight from the chat. Listed coins resolve through CoinGecko and Binance; DEX-traded tokens come from DexScreener across eleven chains (Ethereum, BSC, Polygon, Arbitrum, Optimism, Avalanche, Base, Solana, Fantom, Cronos, Linea).</p>
+      <h3>Commands</h3>
+      <ul>
+        <li><code>/p &lt;symbol or CA&gt; [chain]</code> gives a price card with market cap, 24-hour move, and volume. Example: <code>/p btc</code>.</li>
+        <li><code>/c &lt;symbol or CA&gt; [chain] [1h|4h|1d|1w]</code> renders a candlestick chart. The timeframe defaults to <code>4h</code>. Example: <code>/c eth 1d</code>.</li>
+        <li>Paste a contract address instead of a symbol to resolve a token directly: <code>/p 0xd8E1&hellip;</code>.</li>
+      </ul>
+      <h3>Project token (bare <code>/p</code> and <code>/c</code>)</h3>
+      <p>Pin your group's own token so members get its price and chart without typing a symbol or address:</p>
+      <ol>
+        <li>Open <code>/menu</code> and choose <strong>💹 Price Commands</strong>, then <strong>🪙 Project token</strong>, then <strong>Set project token</strong>.</li>
+        <li>Paste the contract address (EVM <code>0x…</code> or Solana base58).</li>
+        <li>The bot looks it up, picks the highest-liquidity chain, shows a preview, and asks you to confirm.</li>
+      </ol>
+      <p>After that, a bare <code>/p</code> or <code>/c</code> in the group shows the project token instantly. One chain per group; if your token trades on several, pick the main pool. It also works in DM once you have opened <code>/menu</code> for that group.</p>
+      <h3>Safety and control</h3>
+      <ul>
+        <li><strong>Clone-aware chooser</strong>: when a symbol is ambiguous, the bot lists candidates with chain badges and flags suspicious clones (very new, tiny liquidity) with a warning, so members do not land on a copycat.</li>
+        <li><strong>Canonical first</strong>: <code>/p btc</code> shows Bitcoin, not a DEX wrapper. Listed coins win the default slot, with a "Different one?" button for wrapped variants.</li>
+        <li><strong>Per-group toggle</strong>: the whole feature is on by default. Disable it from <code>/menu</code> → 💹 Price Commands in groups you want kept strictly moderation-only.</li>
+      </ul>
     </section>
 
     <section id="portal">
@@ -346,6 +372,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <tr><td><code>/start</code></td><td>Welcome card in DM with your connected groups</td></tr>
         <tr><td><code>/help</code></td><td>Command overview</td></tr>
         <tr><td><code>/id</code></td><td>Show the current chat's id (for portal and log setup)</td></tr>
+        <tr><td><code>/p &lt;symbol or CA&gt;</code></td><td>Live price card for any coin or token</td></tr>
+        <tr><td><code>/c &lt;symbol or CA&gt; [1h|4h|1d|1w]</code></td><td>Candlestick chart (default 4h)</td></tr>
         <tr><td><code>/admins</code></td><td>List group admins without pinging them</td></tr>
         <tr><td><code>/kickme</code></td><td>Leave the group via the bot (rejoining allowed)</td></tr>
         <tr><td><code>/report</code></td><td>Flag a spam image (reply to it)</td></tr>
@@ -368,6 +396,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <tr><td><code>/savemenu</code> <code>/addbutton</code> <code>/delbutton</code> <code>/delmenu</code> <code>/menus</code></td><td>Hashtag menus</td></tr>
         <tr><td><code>/backup</code> <code>/restore</code></td><td>Export and import group configuration</td></tr>
         <tr><td><code>/cleandeleted</code></td><td>Remove deleted accounts from the member list</td></tr>
+        <tr><td><code>/menu</code> → 💹 Price Commands</td><td>Pin a project token for bare <code>/p</code> and <code>/c</code>, or disable price commands</td></tr>
         <tr><td><code>/setupcampaign</code> <code>/endcampaign</code> <code>/setbanner</code> <code>/setendbanner</code> <code>/setresultschat</code> <code>/lastresult</code> <code>/adminhelp</code></td><td>Referral campaign management</td></tr>
         <tr><td><code>/refdetails</code> <code>/refstats</code> <code>/refvalidate</code> <code>/refinvalidate</code></td><td>Referral review tools</td></tr>
       </table>

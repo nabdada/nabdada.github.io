@@ -287,6 +287,42 @@ h2{
 .report-sig{display:block;margin-top:14px;color:var(--faint);font-style:italic;font-family:'Outfit',sans-serif;}
 @media(max-width:900px){.watch{grid-template-columns:1fr;gap:44px;}}
 
+/* ---------- prices & charts ---------- */
+.price-rail{
+  margin-top:48px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:var(--r-panel);
+  overflow:hidden;
+}
+.price-row{display:flex;align-items:center;gap:22px;padding:20px 28px;}
+.price-row + .price-row{border-top:1px solid var(--line);}
+.price-cmd{
+  font-family:'JetBrains Mono',monospace;
+  font-size:1.02rem;color:var(--accent-bright);
+  background:rgba(201,151,80,.08);
+  border:1px solid rgba(201,151,80,.22);
+  border-radius:8px;
+  padding:6px 12px;white-space:nowrap;flex:none;min-width:160px;
+}
+.price-row p{color:var(--muted);font-size:.96rem;margin:0;}
+@media(max-width:560px){
+  .price-row{flex-direction:column;align-items:flex-start;gap:10px;padding:18px;}
+  .price-cmd{min-width:0;}
+}
+.price-highlights{margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+.phl{
+  background:var(--panel);border:1px solid var(--line);
+  border-radius:var(--r-panel);padding:24px 26px;
+}
+.phl.feature{background:linear-gradient(150deg,rgba(201,151,80,.12),var(--panel) 62%);}
+.phl-head{display:flex;align-items:center;gap:12px;margin-bottom:10px;}
+.phl-head .ph{color:var(--accent);width:25px;height:25px;}
+.phl h3{font-size:1.12rem;font-weight:600;letter-spacing:-.01em;}
+.phl p{color:var(--muted);font-size:.95rem;}
+.phl code{font-family:'JetBrains Mono',monospace;font-size:.85em;color:var(--accent-bright);}
+@media(max-width:760px){.price-highlights{grid-template-columns:1fr;}}
+
 /* ---------- toolkit ---------- */
 .toolkit{
   margin-top:54px;
@@ -394,6 +430,7 @@ footer{
       <a href="#catches">What it catches</a>
       <a href="#defenses">Defenses</a>
       <a href="#watchtower">Watchtower</a>
+      <a href="#prices">Prices</a>
       <a href="#toolkit">Toolkit</a>
       <a href="#growth">Growth</a>
       <a href="docs.html">Docs</a>
@@ -539,6 +576,45 @@ footer{
       2 ghosts cleared from the roster<br>
       12 new arrivals today (was 9 yesterday)
       <span class="report-sig">Combo Guard, keeping the gates.</span>
+    </div>
+  </div>
+</section>
+
+<section id="prices">
+  <div class="wrap">
+    <h2 class="reveal">Live prices and charts, right in the chat</h2>
+    <p class="section-intro reveal" style="--i:1">Members look up any token without leaving the group. Listed coins come from CoinGecko and Binance; DEX tokens are pulled from DexScreener across eleven chains.</p>
+
+    <div class="price-rail reveal" style="--i:1">
+      <div class="price-row">
+        <span class="price-cmd">/p btc</span>
+        <p>Price card with market cap, 24-hour move, and volume.</p>
+      </div>
+      <div class="price-row">
+        <span class="price-cmd">/c eth 1d</span>
+        <p>Candlestick chart, with timeframes from 1h to 1w.</p>
+      </div>
+      <div class="price-row">
+        <span class="price-cmd">/p 0xd8E1&hellip;</span>
+        <p>Paste any contract address to resolve a token directly.</p>
+      </div>
+    </div>
+
+    <div class="price-highlights">
+      <div class="phl feature reveal" style="--i:1">
+        <div class="phl-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M235.32,81.37,174.63,20.69a16,16,0,0,0-22.63,0L98.37,74.49c-10.66-3.34-35-7.37-60.4,13.14a16,16,0,0,0-1.29,23.78L85,159.71,42.34,202.34a8,8,0,0,0,11.32,11.32L96.29,171l48.29,48.29A16,16,0,0,0,155.9,224c.38,0,.75,0,1.13,0a15.93,15.93,0,0,0,11.64-6.33c19.64-26.1,17.75-47.32,13.19-60L235.33,104A16,16,0,0,0,235.32,81.37ZM224,92.69h0l-57.27,57.46a8,8,0,0,0-1.49,9.22c9.46,18.93-1.8,38.59-9.34,48.62L48,100.08c12.08-9.74,23.64-12.31,32.48-12.31A40.13,40.13,0,0,1,96.81,91a8,8,0,0,0,9.25-1.51L163.32,32,224,92.68Z"/></svg>
+          <h3>Pin your project token</h3>
+        </div>
+        <p>Set your token's contract address once. After that a bare <code>/p</code> or <code>/c</code> shows your project's price and chart in a single keystroke, no symbol needed.</p>
+      </div>
+      <div class="phl reveal" style="--i:2">
+        <div class="phl-head">
+          <svg class="ph" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" fill="currentColor"><path d="M225.86,102.82c-3.77-3.94-7.67-8-9.14-11.57-1.36-3.27-1.44-8.69-1.52-13.94-.15-9.76-.31-20.82-8-28.51s-18.75-7.85-28.51-8c-5.25-.08-10.67-.16-13.94-1.52-3.56-1.47-7.63-5.37-11.57-9.14C146.28,23.51,138.44,16,128,16s-18.27,7.51-25.18,14.14c-3.94,3.77-8,7.67-11.57,9.14C88,40.64,82.56,40.72,77.31,40.8c-9.76.15-20.82.31-28.51,8S41,67.55,40.8,77.31c-.08,5.25-.16,10.67-1.52,13.94-1.47,3.56-5.37,7.63-9.14,11.57C23.51,109.72,16,117.56,16,128s7.51,18.27,14.14,25.18c3.77,3.94,7.67,8,9.14,11.57,1.36,3.27,1.44,8.69,1.52,13.94.15,9.76.31,20.82,8,28.51s18.75,7.85,28.51,8c5.25.08,10.67.16,13.94,1.52,3.56,1.47,7.63,5.37,11.57,9.14C109.72,232.49,117.56,240,128,240s18.27-7.51,25.18-14.14c3.94-3.77,8-7.67,11.57-9.14,3.27-1.36,8.69-1.44,13.94-1.52,9.76-.15,20.82-.31,28.51-8s7.85-18.75,8-28.51c.08-5.25.16-10.67,1.52-13.94,1.47-3.56,5.37-7.63,9.14-11.57C232.49,146.28,240,138.44,240,128S232.49,109.73,225.86,102.82Zm-11.55,39.29c-4.79,5-9.75,10.17-12.38,16.52-2.52,6.1-2.63,13.07-2.73,19.82-.1,7-.21,14.33-3.32,17.43s-10.39,3.22-17.43,3.32c-6.75.1-13.72.21-19.82,2.73-6.35,2.63-11.52,7.59-16.52,12.38S132,224,128,224s-9.15-4.92-14.11-9.69-10.17-9.75-16.52-12.38c-6.1-2.52-13.07-2.63-19.82-2.73-7-.1-14.33-.21-17.43-3.32s-3.22-10.39-3.32-17.43c-.1-6.75-.21-13.72-2.73-19.82-2.63-6.35-7.59-11.52-12.38-16.52S32,132,32,128s4.92-9.15,9.69-14.11,9.75-10.17,12.38-16.52c2.52-6.1,2.63-13.07,2.73-19.82.1-7,.21-14.33,3.32-17.43S70.51,56.9,77.55,56.8c6.75-.1,13.72-.21,19.82-2.73,6.35-2.63,11.52-7.59,16.52-12.38S124,32,128,32s9.15,4.92,14.11,9.69,10.17,9.75,16.52,12.38c6.1,2.52,13.07,2.63,19.82,2.73,7,.1,14.33.21,17.43,3.32s3.22,10.39,3.32,17.43c.1,6.75.21,13.72,2.73,19.82,2.63,6.35,7.59,11.52,12.38,16.52S224,124,224,128,219.08,137.15,214.31,142.11ZM120,136V80a8,8,0,0,1,16,0v56a8,8,0,0,1-16,0Zm20,36a12,12,0,1,1-12-12A12,12,0,0,1,140,172Z"/></svg>
+          <h3>Clone-aware by default</h3>
+        </div>
+        <p>When a symbol is ambiguous, the chooser flags suspicious clones with a warning so members never land on a copycat token by accident.</p>
+      </div>
     </div>
   </div>
 </section>
