@@ -267,6 +267,14 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <li><strong>Off</strong>: instant approval once the screening passes.</li>
       </ul>
       <p>The captcha type and the timeout (default 5 minutes, then the request expires) are set per group in <code>/menu</code>.</p>
+
+      <h3>Landing message and Join button</h3>
+      <p>Once a portal channel is connected the bot posts a landing message there with a <strong>🚪 Join &lt;group&gt;</strong> URL button on top plus any extra buttons you've configured. The Join button routes tap-throughs via the bot's screening and captcha, so it can't be bypassed by pasting the raw invite link.</p>
+      <ul>
+        <li>Everything is edited from <code>/menu</code> → 🚪 Portal → the Greeting sub-menu: greeting text (with the same placeholders as welcome messages), an optional photo or video, and your own extra buttons.</li>
+        <li>The Join button's label is auto-generated from the group's title. If you renamed the group and the label is stuck on the old name, or you just want different capitalization, open <strong>🔘 Buttons</strong> and tap <strong>🚪 Edit Join button</strong>. Type any label (up to 64 characters, emoji allowed) and the landing message is re-posted automatically with the new button — no need to delete and rebuild the portal.</li>
+        <li>Media in the greeting is cached after the first send, so re-posting after every text edit does not re-upload the whole photo or video from the server.</li>
+      </ul>
     </section>
 
     <section id="welcome">
@@ -297,6 +305,37 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <li><code>/filters</code> lists them, <code>/stop &lt;trigger&gt;</code> deletes one, <code>/edit_filter &lt;trigger&gt; &lt;new&gt;</code> updates one.</li>
         <li><code>/testfilter &lt;trigger&gt;</code> in DM previews the response without posting it in the group.</li>
       </ul>
+
+      <h3>Media filters</h3>
+      <p>Reply to a photo or video with <code>/filter &lt;trigger&gt; /image</code> or <code>/filter &lt;trigger&gt; /video</code> to attach that media as the response. Add an optional caption after the marker: <code>/filter logo /image Our official mark, please share the source.</code></p>
+
+      <h3>Inline buttons</h3>
+      <p>Any text response (or media caption) can carry tappable URL buttons instead of raw links. Use this Markdown-style marker inside the response:</p>
+      <pre><code>[Button Label](buttonurl:https://your-site.com)</code></pre>
+      <p>The bot strips the marker out of the visible text and renders <strong>Button Label</strong> as an inline button underneath the reply. Nothing shows up as a bare URL in the message body.</p>
+
+      <h4>Full example</h4>
+      <pre><code>/filter rules Please read the rules before posting.
+
+[📚 Open Rules](buttonurl:https://comboguard.vercel.app/rules)</code></pre>
+      <p>Typing <code>rules</code> in the group produces "Please read the rules before posting." plus a tappable <strong>📚 Open Rules</strong> button that links to your site.</p>
+
+      <h4>Multiple buttons</h4>
+      <p>Add more markers — each starts a new row by default. Append <code>:same</code> to a URL to keep the button on the same row as the previous one; rows wrap automatically after three buttons.</p>
+      <pre><code>/filter socials Follow us:
+
+[🌐 Website](buttonurl:https://comboguard.vercel.app)
+[🐦 X](buttonurl:https://x.com/comboguard:same)
+[✈️ Telegram](buttonurl:https://t.me/comboguard:same)</code></pre>
+      <p>Result: one row with three buttons — Website · X · Telegram.</p>
+
+      <h4>Supported URL schemes</h4>
+      <ul>
+        <li><code>https://</code> and <code>http://</code> — standard web links.</li>
+        <li><code>tg://</code> — Telegram deep links such as <code>tg://user?id=123456789</code>.</li>
+        <li>Bare domains are auto-prefixed with <code>https://</code>, so <code>[Docs](buttonurl:comboguard.vercel.app/docs.html)</code> works too.</li>
+      </ul>
+      <p>Editing an existing filter works the same way — just include the button markers in the new response passed to <code>/edit_filter</code>.</p>
     </section>
 
     <section id="timed">
