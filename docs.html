@@ -303,8 +303,18 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <ul>
         <li><code>/filter &lt;trigger&gt; &lt;response&gt;</code> creates one. Triggers can be plain words or patterns.</li>
         <li><code>/filters</code> lists them, <code>/stop &lt;trigger&gt;</code> deletes one, <code>/edit_filter &lt;trigger&gt; &lt;new&gt;</code> updates one.</li>
-        <li><code>/testfilter &lt;trigger&gt;</code> in DM previews the response without posting it in the group.</li>
+        <li><code>/testfilter &lt;trigger&gt;</code> in DM previews the response without posting it in the group. See <a href="#filter-testing">Testing filters in DM</a> below.</li>
       </ul>
+
+      <h3 id="filter-testing">Testing filters in DM</h3>
+      <p>Plain triggers only fire inside the group they belong to — if you type the trigger in your DM with the bot, nothing happens. That is intentional: it stops casual DM messages from accidentally posting filter responses.</p>
+      <p>To preview a filter privately, use the dedicated command:</p>
+      <pre><code>/testfilter &lt;trigger&gt;</code></pre>
+      <p>It resolves the group you last opened via <code>/menu</code>, looks up the trigger against that group's filters, and delivers the response right there in the DM. The reply uses the same render path as in-group replies — text vs image vs video, inline buttons, formatting — so what you see in DM is exactly what members would see in the group.</p>
+      <p>The leading slash on the trigger is optional. Both of these work:</p>
+      <pre><code>/testfilter rules
+/testfilter /rules</code></pre>
+      <p>If you manage several groups, <code>/testfilter</code> targets whichever group you last opened via <code>/menu</code>. Switch between them from <em>/start → My Connected Groups → 🎛️ Open Panel</em> on the group you want to test against.</p>
 
       <h3>Media filters</h3>
       <p>Reply to a photo or video with <code>/filter &lt;trigger&gt; /image</code> or <code>/filter &lt;trigger&gt; /video</code> to attach that media as the response. Add an optional caption after the marker: <code>/filter logo /image Our official mark, please share the source.</code></p>
