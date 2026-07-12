@@ -166,6 +166,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#start">Getting started</a>
     <a href="#menu">The control panel</a>
     <a href="#protections">Protections</a>
+    <a href="#antispam-menu" style="padding-left:1rem">↳ Anti-Spam menu (rows)</a>
     <a href="#prices">Prices and charts</a>
     <a href="#portal">Portal and captcha</a>
     <a href="#welcome">Welcome messages</a>
@@ -224,6 +225,41 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <p>Lighter offenses earn a warning first. Every warning comes with a 10-second <em>Undo</em> button for the acting admin, and <code>/remove_warn</code> (reply to the user, or pass a user id) clears all active warnings at once. Repeat offenses climb the ladder you configured: warn, mute, kick, ban.</p>
       <h3>The global banlist</h3>
       <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+
+      <h3 id="antispam-menu">Anti-Spam menu — row by row</h3>
+      <p>Open <code>/menu</code> → 🚫 Anti-Spam. Every protection is its own row showing <code>🟢/🔴</code> (on/off) and <code>mode/limit</code> (e.g. <code>warn/3</code> means "three warnings, then apply the mode's escalation"). Tap a row to change its mode/limit or flip it on/off.</p>
+      <ul>
+        <li><strong>Contract address in username</strong> — catches new members whose display name or username contains a token contract address. Common promotion tactic: rename to <code>0xabc…</code> to advertise a token in every group they type in. Default: <code>ban/1</code> (single strike, immediate ban) because there is no legitimate reason to have a CA in your name.</li>
+        <li><strong>Contract address in chat</strong> — catches any message that pastes a contract address as text, in a caption, or embedded in an image (via OCR). Your own project's address is exempt via the <em>CA Allowlist</em> below. Default: <code>warn/3</code>.</li>
+        <li><strong>Quoted links</strong> — catches messages where the link is smuggled inside a Telegram quote / reply-preview block, a classic way to slip past regex-based link blockers. Default: <code>warn/3</code>.</li>
+        <li><strong>External replies</strong> — catches replies whose "reply-to" points at a message in a different chat (i.e. the user is dragging a message from another group into yours as bait). Default: <code>warn/3</code>.</li>
+        <li><strong>External mentions</strong> — catches <code>@username</code> mentions of accounts that are not members of the current group. Prevents drive-by tagging campaigns and out-of-band solicitation. Default: <code>warn/3</code>.</li>
+        <li><strong>Forwarded messages</strong> — catches messages forwarded in from another chat / channel. Common vector for signal-service and pump-scheme spam. Trusted sources go on the <em>Forward Source Allowlist</em> (below). Default: <code>warn/3</code>.</li>
+        <li><strong>Blacklisted words in message</strong> — catches messages containing any phrase from the built-in scam-phrase library (holders-dm-me lines, seed-phrase bait, signal sellers, phishing domains, invite-link phrases). Extend the list per group under <em>📝 Manage restricted words</em>. Default: <code>warn/3</code>.</li>
+      </ul>
+
+      <h4>Mode and limit</h4>
+      <p>Every row's mode is one of:</p>
+      <ul>
+        <li><code>warn</code> — issue a warning; on hitting the limit, apply the escalation mode set for that protection (temp-mute → mute → kick → ban, depending on your ladder).</li>
+        <li><code>temp_mute</code> — mute the user for a fixed duration on the first offense past the limit.</li>
+        <li><code>mute</code> — silence permanently once the limit is reached.</li>
+        <li><code>kick</code> — remove from the group; user can rejoin.</li>
+        <li><code>ban</code> — remove from the group; blocked from rejoining. <code>ban</code> is the only mode that also propagates the user to the cross-group banlist (bot-detected only; admin-manual bans stay local).</li>
+      </ul>
+      <p>The <code>/limit</code> number is how many strikes trigger the mode. <code>ban/1</code> means one strike is enough; <code>warn/3</code> means three warnings, then escalate. Warnings are cleared with the <em>🔄 Undo warning</em> button on each warning post (10-second window) or <code>/remove_warn</code> for bulk recovery.</p>
+
+      <h4>CA Allowlist (project's CA)</h4>
+      <p>Exempts specific contract addresses from the "contract address in chat" protection above. Add your project's own token contract here — otherwise members quoting or pasting it get warned. Marker: <code>➕</code> when empty, <code>✅ (N)</code> once you have added entries. The row also shows the count so you can see at a glance how many are on the list.</p>
+
+      <h4>Forward Source Allowlist</h4>
+      <p>Exempts specific source channels from the "forwarded messages" protection above. Use it for partner-project announcements, official news feeds, and similar channels whose forwards you want to permit. The group's natively-linked discussion channel is auto-allowed in code, so you do not need an entry for that. Same marker convention (<code>➕</code> empty, <code>✅ (N)</code> populated).</p>
+
+      <h4>Allow Telegram invite links</h4>
+      <p>The built-in phrase blocker treats <code>t.me/+…</code>, <code>t.me/joinchat/…</code>, and "join @channel" as a blacklisted phrase — invite links are a top spam vector. If your group is a cross-community space where members legitimately share invite links, flip this to <code>🟢 ON</code> to remove that phrase from the block set. Default: <code>🔴 OFF</code>.</p>
+
+      <h4>Manage restricted words</h4>
+      <p>Shortcut to the per-group restricted-words editor. Same page as <code>/menu</code> → 🛡️ Image Guard → 📝 Restricted Words, just discoverable from where admins look for blacklisted-text policy. Anything you add here augments the built-in scam-phrase library and is enforced by "blacklisted words in message" above.</p>
     </section>
 
     <section id="prices">
