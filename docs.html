@@ -166,6 +166,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#start">Getting started</a>
     <a href="#menu">The control panel</a>
     <a href="#protections">Protections</a>
+    <a href="#name-protection" style="padding-left:1rem">↳ Name Protection</a>
     <a href="#antispam-menu" style="padding-left:1rem">↳ Anti-Spam menu (rows)</a>
     <a href="#prices">Prices and charts</a>
     <a href="#portal">Portal and captcha</a>
@@ -214,17 +215,46 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <p>These run on every message: text, captions, the text inside images, and video keyframes. Display names are re-checked on every message too, so renaming mid-session does not work.</p>
       <h3>What gets caught</h3>
       <ul>
-        <li><strong>Scam phrases</strong>: a curated library of crypto-scam lines ("holders dm me", seed-phrase bait, signal sellers) plus pattern templates. Unicode disguises and spaced-out letters are normalized before matching.</li>
+        <li><strong>Scam phrases</strong>: a curated library of crypto-scam lines ("holders dm me", seed-phrase bait, signal sellers, CA-redeploy/airdrop-registration scripts) plus pattern templates. Unicode disguises and spaced-out letters are normalized before matching. A combo layer also flags messages that pair a distribution claim ("airdropping holders", "redeploying the CA") with a contact-me solicitation ("DM me", "send me a PM") — the skeleton of the airdrop-registration scam, caught even when every individual phrase is reworded.</li>
         <li><strong>Phishing domains</strong>: a built-in blocklist enforced in every group, extendable per group with your own restricted words.</li>
         <li><strong>Contract addresses</strong>: ETH and Solana addresses in messages, names, or images. Whitelist your own project's address in <code>/menu</code>; everything else escalates.</li>
         <li><strong>Wallet screenshots</strong>: images are read with OCR and scored against a wallet-UI model. Known spam images and videos are fingerprinted, so a repost means an instant ban.</li>
-        <li><strong>Impersonators</strong>: names compared against your real admin list and the group title, with lookalike characters normalized and a fuzzy-match tolerance.</li>
-        <li><strong>Restricted name tags</strong>: joins and renames claiming to be admin, support, dev, and similar roles.</li>
+        <li><strong>Impersonators</strong>: names compared against your real admin list and the group title, with lookalike characters normalized and a fuzzy-match tolerance. Banned on sight — at join and on rename. When a rename is involved, the group gets a public callout showing the before→after names (see <a href="#name-protection">Name Protection</a>).</li>
+        <li><strong>Restricted name tags</strong>: role words like admin, support, dev in display names and usernames. Joining <em>with</em> one is allowed but flagged to your log channel; <em>renaming to</em> one after joining is an instant ban — see <a href="#name-protection">Name Protection</a> for the full policy and per-tag controls.</li>
       </ul>
       <h3>Warnings and escalation</h3>
       <p>Lighter offenses earn a warning first. Every warning comes with a 10-second <em>Undo</em> button for the acting admin, and <code>/remove_warn</code> (reply to the user, or pass a user id) clears all active warnings at once. Repeat offenses climb the ladder you configured: warn, mute, kick, ban.</p>
       <h3>The global banlist</h3>
       <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+
+      <h3 id="name-protection">Name Protection</h3>
+      <p>Open <code>/menu</code> → 🪪 Name Protection. This page controls how the bot treats display names and usernames that carry protected role words or match your admins' names.</p>
+
+      <h4>The policy: joining with a role word ≠ renaming to one</h4>
+      <p>Plenty of legitimate members have role words in their names — "Alex | Solidity Dev", "CEO @ SomeStartup". Banning them at the door costs you real members. But someone who joins as "Innocent Bob" and later renames to "Dev Support" is unambiguously hostile. The bot keeps a per-member name history (recorded at join, refreshed on each message), which lets it tell these two cases apart:</p>
+      <ul>
+        <li><strong>Joins with a tag in their name</strong> → allowed in, with a quiet flag to your log channel: <em>"Name-tag flag: joined carrying 'dev' — allowed, watching for rename-to-tag."</em> No public callout, no ban.</li>
+        <li><strong>Renames to a tag after joining</strong> → immediate ban, global-banlist propagation, and a <strong>public group callout with the before→after names</strong>:
+          <blockquote>⚠️ <strong>Impersonation blocked</strong> — [user] was previously named "<em>Alex</em>" and renamed to "<strong>Dev Mark</strong>" (restricted role tag "dev"). They have been banned. If this account messaged you privately, do not trust it — admins never DM first.</blockquote>
+          The callout is the point: members who were DM'd by the fake "Dev" can recognize the name and know it was a scam.</li>
+        <li><strong>Existing members who always carried a tag</strong> (they predate the bot) → flagged once to the log channel, then left alone. No repeat alerts, no bans.</li>
+        <li><strong>Admin-name or group-name matches</strong> → always banned on sight, at join and on rename. Nobody arrives with your admin's exact display name by accident. Lookalike Unicode characters and digit substitutions are folded before comparing.</li>
+      </ul>
+
+      <h4>Controls on the page</h4>
+      <ul>
+        <li><strong>🏷️ Restricted role tags</strong> and <strong>🕵️ Admin/group impersonation</strong> — independent on/off switches for the two detection families.</li>
+        <li><strong>🚪 Join action</strong> — the join-time policy for tag hits: <em>🔔 Alert (allow)</em> is the default; switch to <em>⛔ Ban</em> to restore the hard line for high-security groups.</li>
+        <li><strong>⚙️ Built-in tags</strong> — all 16 built-in role words (owner, founder, ceo, cto, admin, moderator, mod, support, team, official, dev, developer, creator, manager, staff, helper) as individual per-group toggles. Running a developer community? Switch off <code>dev</code> there while keeping <code>support</code> and <code>official</code> armed.</li>
+        <li><strong>➕ Add custom tag</strong> — extend the list with your own words (e.g. <code>treasury</code>, <code>listing</code>). One word, letters/digits, matched the same way as built-ins. Each custom tag gets a one-tap remove button.</li>
+      </ul>
+      <p>Tags match <strong>whole words only</strong> — a member named "Modjuh" is fine ("mod" is embedded mid-word), "Dev Mark" hits. Unicode lookalikes (Cyrillic letters, fullwidth forms, math alphabets) are normalized before matching.</p>
+
+      <h4>Where the join flags go</h4>
+      <p>Alerts land in your <a href="#logging">log channel</a> under the <code>automated</code> category. Tip: <code>/setlog</code> accepts a private admin <em>group</em> id, not just a channel — point it at your mod chat and the team can discuss each flag right where it appears. If no log channel is set, the Name Protection page shows a reminder.</p>
+
+      <h4>One platform limitation to know</h4>
+      <p>Telegram does not notify bots when a user renames themselves. A rename is only visible on the user's <em>next activity in the group</em> — so a scammer who renames and then only sends private DMs is invisible to any bot. The public callout exists precisely for the moment they do surface in the group.</p>
 
       <h3 id="antispam-menu">Anti-Spam menu — row by row</h3>
       <p>Open <code>/menu</code> → 🚫 Anti-Spam. Every protection is its own row showing <code>🟢/🔴</code> (on/off) and <code>mode/limit</code> (e.g. <code>warn/3</code> means "three warnings, then apply the mode's escalation"). Tap a row to change its mode/limit or flip it on/off.</p>
@@ -402,6 +432,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <li>Send <code>/id</code> in the channel to get its id.</li>
         <li>In the group, send <code>/setlog &lt;channel_id&gt;</code>. Check with <code>/logchannel</code>, disconnect with <code>/unsetlog</code>.</li>
       </ol>
+      <p><strong>Tip — use a group instead of a channel:</strong> <code>/setlog</code> accepts any chat the bot can post to, including a private <em>group</em> where your mod team hangs out. Alerts then arrive as normal chat messages the team can reply to and discuss in place — handy for the <a href="#name-protection">Name Protection</a> join flags, which are informational rather than pure audit records.</p>
       <p>Each category can be switched on and off with <code>/log &lt;category&gt;</code> and <code>/nolog &lt;category&gt;</code>:</p>
       <table>
         <tr><th>Category</th><th>What it records</th></tr>
