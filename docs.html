@@ -31,6 +31,7 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html{scroll-behavior:smooth;scroll-padding-top:96px;overflow-y:scroll;}
+body{overflow-x:hidden;}
 body{
   background:var(--bg);color:var(--text);
   font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -84,6 +85,7 @@ img{display:block;max-width:100%;}
 }
 
 /* content */
+.content{min-width:0;}   /* grid child may shrink below content width */
 .content h1{font-size:clamp(2rem,4vw,2.7rem);font-weight:700;letter-spacing:-.02em;line-height:1.1;}
 .lead{color:var(--muted);margin-top:14px;max-width:64ch;}
 .content section{padding:0;margin-top:72px;scroll-margin-top:96px;}
@@ -106,7 +108,7 @@ code{
   border-radius:6px;
   padding:2px 7px;
   color:var(--accent-bright);
-  white-space:nowrap;
+  overflow-wrap:break-word;
 }
 
 .note{
@@ -171,7 +173,6 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#prices">Prices and charts</a>
     <a href="#portal">Portal and captcha</a>
     <a href="#shield">Raid Shield</a>
-    <a href="#quiet">Quiet Hours</a>
     <a href="#welcome">Welcome messages</a>
     <a href="#menus">Hashtag menus</a>
     <a href="#filters">Filters</a>
@@ -380,10 +381,6 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <p>Launching something and expecting a genuine wave of joins? The <strong>📈 Expecting a wave</strong> button pauses both detectors for 2–24 hours so real growth is never treated as an attack.</p>
     </section>
 
-    <section id="quiet">
-      <h2>Quiet Hours</h2>
-      <p>A daily window (times in UTC) during which the bot enforces slow mode itself: messages sent faster than the configured delay are deleted, with a one-time nudge. Admins and trusted members are exempt, and enforcement lifts when the window ends — built for the off-hours raid pattern where spammers strike while admins sleep. The menu shows the bot's live clock and a countdown to the window edge, so a timezone mistake is visible at a glance. Configure from <code>/menu</code> → 🌙 Quiet Hours.</p>
-    </section>
 
     <section id="welcome">
       <h2>Welcome messages</h2>
