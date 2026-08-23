@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Combo Guard docs. Setup and options.</title>
-<meta name="description" content="How to set up Combo Guard in your Telegram group: protections, portal screening, welcome messages, menus, filters, logging, and the referral system.">
+<meta name="description" content="How to set up Combo Guard in your Telegram group: protections, Raid Shield, portal screening, chat locks, whitelists, X Watch follower alerts, referral campaigns, and more.">
 <link rel="icon" type="image/png" href="assets/logo.png?v=3">
 <style>
 /* Combo Guard docs page. Shares the brand tokens with index.html. */
@@ -30,7 +30,7 @@
   --ease:cubic-bezier(.16,1,.3,1);
 }
 *{margin:0;padding:0;box-sizing:border-box;}
-html{scroll-behavior:smooth;scroll-padding-top:96px;}
+html{scroll-behavior:smooth;scroll-padding-top:96px;overflow-y:scroll;}
 body{
   background:var(--bg);color:var(--text);
   font-family:'Outfit',system-ui,-apple-system,'Segoe UI',sans-serif;
@@ -170,6 +170,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#antispam-menu" style="padding-left:1rem">↳ Anti-Spam menu (rows)</a>
     <a href="#prices">Prices and charts</a>
     <a href="#portal">Portal and captcha</a>
+    <a href="#shield">Raid Shield</a>
+    <a href="#quiet">Quiet Hours</a>
     <a href="#welcome">Welcome messages</a>
     <a href="#menus">Hashtag menus</a>
     <a href="#filters">Filters</a>
@@ -177,6 +179,7 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
     <a href="#logging">Logging channel</a>
     <a href="#summary">Daily summary</a>
     <a href="#referrals">Referral campaigns</a>
+    <a href="#xwatch">X Watch</a>
     <a href="#maintenance">Backup and upkeep</a>
     <a href="#commands">Command reference</a>
   </aside>
@@ -197,6 +200,23 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
 
     <section id="menu">
       <h2>The control panel</h2>
+      <p>Everything below is configured from <code>/menu</code> in a DM with the bot — pick your group, then a section. Every command has a menu equivalent, so nothing is hidden behind memorized syntax.</p>
+      <table>
+        <tr><th>Section</th><th>What it controls</th></tr>
+        <tr><td>🚪 Portal · 🛡️ Image Guard</td><td>Join screening with captcha; image OCR and wallet detection</td></tr>
+        <tr><td>🚫 Anti-Spam · 🚨 Warnings</td><td>Content rules; the escalation ladder for every violation type</td></tr>
+        <tr><td>🛡️ Raid Shield</td><td>Flood guard and join-cascade raid mode</td></tr>
+        <tr><td>🪪 Name Protection · 🔗 Link Security</td><td>Impersonation rules; URL-shortener expansion</td></tr>
+        <tr><td>🤫 Silent Mode · 🧹 Purge on Ban</td><td>Hide routine notices; delete a banned member&rsquo;s messages</td></tr>
+        <tr><td>🔒 Lock Chat · 🤝 Trusted Members</td><td>Freeze the chat; whitelist people from moderation</td></tr>
+        <tr><td>👋 Welcome · 🆕 Newcomers</td><td>Greetings; new-member restrictions</td></tr>
+        <tr><td>🔍 Filters · 🗂️ Hashtag Menus</td><td>Auto-replies; <code>#rules</code>-style button menus</td></tr>
+        <tr><td>⏰ Timed Msgs · 🌙 Quiet Hours</td><td>Recurring posts; scheduled slow mode</td></tr>
+        <tr><td>🧼 Service Cleanup · ✨ Cleaner</td><td>Join/leave notice removal; deleted-account sweeps</td></tr>
+        <tr><td>💹 Price Commands · 🐦 Tweet Previews</td><td>Token prices and charts; X link previews</td></tr>
+        <tr><td>🎁 Referral System · 📡 X Watch</td><td>Invite campaigns; notable-follower alerts</td></tr>
+        <tr><td>📊 Stats · 📝 Logging · 💾 Backup</td><td>Activity numbers; the audit channel; config export</td></tr>
+      </table>
       <p>Send <code>/menu</code> in a group (or in DM) to open the per-group control panel. From there you can toggle and configure:</p>
       <ul>
         <li><strong>Anti-spam toggles</strong> for each protection type: scam phrases, contract addresses, external links and mentions, forwarded messages, invite-link phrases.</li>
@@ -225,8 +245,15 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <h3>Warnings and escalation</h3>
       <p>Lighter offenses earn a warning first. Every warning comes with a 10-second <em>Undo</em> button for the acting admin, and <code>/remove_warn</code> (reply to the user, or pass a user id) clears all active warnings at once. Repeat offenses climb the ladder you configured: warn, mute, kick, ban.</p>
       <h3>The global banlist</h3>
-      <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+      <p>High-confidence detections (spam media, impersonation, restricted name tags) are banned in every group the bot guards, not just where they were caught. Only the bot's own detections feed this list automatically. <code>/gban</code> lets a group admin push a confirmed bad actor to it; <code>/ban</code> stays local to your group.</p>
+      <h3>Purge on ban</h3>
+      <p>When an admin manually bans a member — natively or via <code>/ban</code> — the bot automatically deletes that member's recent messages from the group (everything it tracked over the last 48 hours). Toggle per group in <code>/menu</code> → 🧹 Purge on Ban; on by default.</p>
+      <p>Every manual ban also offers the admins a one-tap <em>"add to global banlist"</em> button — on the ban confirmation and in the log channel. The write only happens on that explicit, attributed tap, so a single hasty ban never propagates network-wide by itself.</p>
 
+      <h3>Locking the chat</h3>
+      <p><code>/lock</code> freezes the group in one tap (with a confirm button): non-admins can't send anything until <code>/unlock</code>. The bot snapshots the group's exact permissions before locking and restores them on unlock — a custom setup (say, media disabled) comes back precisely as it was.</p>
+      <h3>Whitelist</h3>
+      <p>Trusted members skip the checks. <code>/whitelist</code> (reply to the user, or pass their id) exempts them from content moderation and the flood guard, and clears their active warnings; <code>/unwhitelist</code> reverses it and <code>/whitelisted</code> lists everyone. Members can also <strong>earn</strong> a lighter automatic whitelist: 10 meaningful messages spread across at least 2 different days — filler like "gm" counts for nothing. Auto-whitelisted members keep going through the high-confidence image and video scanners; nobody, whitelisted or not, ever skips the global banlist or impersonation detection, and any punishment revokes the whitelist instantly.</p>
       <h3 id="name-protection">Name Protection</h3>
       <p>Open <code>/menu</code> → 🪪 Name Protection. This page controls how the bot treats display names and usernames that carry protected role words or match your admins' names.</p>
 
@@ -343,6 +370,21 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       </ul>
     </section>
 
+    <section id="shield">
+      <h2>Raid Shield</h2>
+      <p>Two independent detectors, both off by default, configured from <code>/menu</code> → 🛡️ Raid Shield.</p>
+      <h3>Flood guard</h3>
+      <p>Someone posting a burst (default 8 messages in 10 seconds, presets from strict to relaxed) has the burst deleted and goes through the group's normal warning ladder — the same warn → mute → ban escalation as any other violation, with the same undo button and silent-mode behavior.</p>
+      <h3>Raid guard</h3>
+      <p>A join cascade (default 10 joins in 60 seconds) triggers <strong>raid mode</strong> — immediately in Auto mode, or after an admin taps the button on the alert. Activation is retroactive on the wave that tripped it. While active, every new joiner is muted and pointed at a one-tap human check: press <strong>Start</strong> in the bot's DM and you're chatting seconds later. Bots can't press it. Joiners who already passed the portal captcha are exempt. Raid mode expires on its own, or an admin taps <em>All clear</em> and chooses whether the never-verified leftovers get unmuted or removed.</p>
+      <p>Launching something and expecting a genuine wave of joins? The <strong>📈 Expecting a wave</strong> button pauses both detectors for 2–24 hours so real growth is never treated as an attack.</p>
+    </section>
+
+    <section id="quiet">
+      <h2>Quiet Hours</h2>
+      <p>A daily window (times in UTC) during which the bot enforces slow mode itself: messages sent faster than the configured delay are deleted, with a one-time nudge. Admins and trusted members are exempt, and enforcement lifts when the window ends — built for the off-hours raid pattern where spammers strike while admins sleep. The menu shows the bot's live clock and a countdown to the window edge, so a timezone mistake is visible at a glance. Configure from <code>/menu</code> → 🌙 Quiet Hours.</p>
+    </section>
+
     <section id="welcome">
       <h2>Welcome messages</h2>
       <p>Greet new members with text, a photo, or a video, configured in <code>/menu</code>. Welcome text supports placeholders:</p>
@@ -416,11 +458,10 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
 
     <section id="timed">
       <h2>Timed messages</h2>
-      <p>Recurring announcements posted on an interval, useful for rules reminders or pinned-info refreshers.</p>
+      <p>Recurring announcements posted on an interval, useful for rules reminders or pinned-info refreshers. Everything is managed from <code>/menu</code> → ⏰ Timed Messages: a guided add flow (pick the interval, type <code>Title | text</code>), and a per-message page with a preview, pause/resume, edit, interval change, and delete.</p>
       <ul>
-        <li><code>/timed_add &lt;minutes&gt; &lt;title&gt;|&lt;text&gt;</code> schedules one.</li>
-        <li><code>/timed_list</code> shows them with their index numbers.</li>
-        <li><code>/timed_remove &lt;idx&gt;</code> deletes, <code>/timed_toggle &lt;idx&gt;</code> pauses and resumes.</li>
+        <li>Command alternative: <code>/timed_add &lt;minutes&gt; &lt;title&gt;|&lt;text&gt;</code> schedules one.</li>
+        <li><code>/timed_list</code> shows them with their index numbers; <code>/timed_remove &lt;idx&gt;</code> deletes, <code>/timed_toggle &lt;idx&gt;</code> pauses and resumes.</li>
       </ul>
     </section>
 
@@ -460,13 +501,26 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <li><code>/setresultschat</code> picks the channel where standings are posted; <code>/lastresult</code> reposts the latest.</li>
         <li><code>/endcampaign</code> closes it manually. <code>/adminhelp</code> lists all campaign admin commands.</li>
         <li>Borderline cases can be reviewed with <code>/refdetails</code>, <code>/refstats</code>, and decided with <code>/refvalidate</code> or <code>/refinvalidate</code>.</li>
+        <li>Day campaigns run their full length: a 7-day campaign started Monday morning ends the <em>next</em> Monday at 19:00 local time.</li>
+        <li>The bot hypes the campaign for you: a daily standings post with a countdown (final day becomes a "last call"), and milestone shout-outs when an inviter hits every Nth valid referral. Both are controlled from <code>/menu</code> → Referral System — the milestone step is pickable so large groups aren't flooded.</li>
       </ul>
       <h3>Joining in (members)</h3>
       <ul>
         <li><code>/ref</code> or <code>/getref</code> gives a personal invite link.</li>
-        <li>An invited user counts as <strong>valid</strong> once they post 3 messages within 24 hours of joining.</li>
+        <li>Invited users are greeted with a quick human check: they start muted and unlock chat by tapping a verify button that opens the bot's DM. Verifying takes seconds and never counts toward validity — it just proves a human arrived. Anyone still unverified is auto-unmuted after an hour.</li>
+        <li>An invited user counts as <strong>valid</strong> once they post 3 meaningful messages within 24 hours of joining — stickers, emoji-only or one-word filler, forwards and repeated texts don't count.</li>
         <li><code>/myref</code> shows personal stats, <code>/refleader</code> the current top 10, <code>/alltimeref</code> the lifetime standings.</li>
         <li><code>/refrules</code> shows the campaign's payout terms; <code>/refhelp</code> lists the commands.</li>
+      </ul>
+    </section>
+
+    <section id="xwatch">
+      <h2>X Watch</h2>
+      <p>Link your project's X (Twitter) account and the bot announces notable new followers in the group — an image card with the follower's avatar, your logo, their audience size, account age, and bio, plus clickable profile links. Multiple follows in one check arrive as a single message, with the overflow in a tap-to-expand block.</p>
+      <ul>
+        <li>Setup in DM: <code>/menu</code> → 📡 X Watch → type the handle (the bot auto-detects it and confirms) → pick the alert threshold (1,000–20,000 followers) → switch ON.</li>
+        <li>Turning ON snapshots current followers first, so existing history never floods the chat — only people who follow from that moment count.</li>
+        <li>Each check reads the newest 20 followers. Accounts that can gain more than that between checks can request the <strong>200-follower premium window</strong> straight from the menu.</li>
       </ul>
     </section>
 
@@ -498,6 +552,10 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       </table>
 
       <h3>Group admins</h3>
+      <table>
+        <tr><td><code>/lock</code> · <code>/unlock</code></td><td>Freeze / unfreeze the chat for non-admins (permissions restored exactly)</td></tr>
+        <tr><td><code>/whitelist</code> · <code>/unwhitelist</code> · <code>/whitelisted</code></td><td>Manage trusted members (reply or user id)</td></tr>
+      </table>
       <table>
         <tr><th>Command</th><th>What it does</th></tr>
         <tr><td><code>/menu</code></td><td>Open the per-group control panel</td></tr>
