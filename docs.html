@@ -497,13 +497,15 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
         <li><code>/setresultschat</code> picks the channel where standings are posted; <code>/lastresult</code> reposts the latest.</li>
         <li><code>/endcampaign</code> closes it manually. <code>/adminhelp</code> lists all campaign admin commands.</li>
         <li>Borderline cases can be reviewed with <code>/refdetails</code>, <code>/refstats</code>, and decided with <code>/refvalidate</code> or <code>/refinvalidate</code>.</li>
+        <li><code>/refaudit</code> (also in <code>/menu</code> → Referral System → Admin Tools) generates an anti-bot report: every referral gets a risk score from behavioral and account signals, so suspicious entries are flagged for review before prizes are paid.</li>
+        <li>Admins can also run <code>/refleader</code> in the bot's DM to check standings without posting in the group.</li>
         <li>Day campaigns run their full length: a 7-day campaign started Monday morning ends the <em>next</em> Monday at 19:00 local time.</li>
         <li>The bot hypes the campaign for you: a daily standings post with a countdown (final day becomes a "last call"), and milestone shout-outs when an inviter hits every Nth valid referral. Both are controlled from <code>/menu</code> → Referral System — the milestone step is pickable so large groups aren't flooded.</li>
       </ul>
       <h3>Joining in (members)</h3>
       <ul>
         <li><code>/ref</code> or <code>/getref</code> gives a personal invite link.</li>
-        <li>Invited users are greeted with a quick human check: they start muted and unlock chat by tapping a verify button that opens the bot's DM. Verifying takes seconds and never counts toward validity — it just proves a human arrived. Anyone still unverified is auto-unmuted after an hour.</li>
+        <li>Invited users are greeted with a quick human check: they start muted, tap the verify button to open the bot's DM, and type the code from a captcha image to unlock chat. Verifying takes seconds and never counts toward validity — it just proves a human arrived. Anyone still unverified is auto-unmuted after an hour.</li>
         <li>An invited user counts as <strong>valid</strong> once they post 3 meaningful messages within 24 hours of joining — stickers, emoji-only or one-word filler, forwards and repeated texts don't count.</li>
         <li><code>/myref</code> shows personal stats, <code>/refleader</code> the current top 10, <code>/alltimeref</code> the lifetime standings.</li>
         <li><code>/refrules</code> shows the campaign's payout terms; <code>/refhelp</code> lists the commands.</li>
