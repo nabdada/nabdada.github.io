@@ -505,8 +505,8 @@ footer{border-top:1px solid var(--line);padding:30px 0;margin-top:40px;}
       <h3>Joining in (members)</h3>
       <ul>
         <li><code>/ref</code> or <code>/getref</code> gives a personal invite link.</li>
-        <li>Invited users are greeted with a quick human check: they start muted, tap the verify button to open the bot's DM, and type the code from a captcha image to unlock chat. Verifying takes seconds and never counts toward validity — it just proves a human arrived. Anyone still unverified is auto-unmuted after an hour.</li>
-        <li>An invited user counts as <strong>valid</strong> once they post 3 meaningful messages within 24 hours of joining — stickers, emoji-only or one-word filler, forwards and repeated texts don't count.</li>
+        <li>Invited users are greeted with a quick human check: they start muted, tap the verify button to open the bot's DM, and type the code from a captcha image to unlock chat. Anyone still unverified is auto-unmuted after an hour — but the referral won't count until they verify; <code>/verifynow</code> in the group re-opens the captcha any time.</li>
+        <li>An invited user counts as <strong>valid</strong> once they pass the human check <em>and</em> post 3 meaningful messages, both within 24 hours of joining — stickers, emoji-only or one-word filler, forwards and repeated texts don't count. When the messages finish before the captcha, the bot nudges them in-group with a verify button so the last step never gets missed.</li>
         <li><code>/myref</code> shows personal stats, <code>/refleader</code> the current top 10, <code>/alltimeref</code> the lifetime standings.</li>
         <li><code>/refrules</code> shows the campaign's payout terms; <code>/refhelp</code> lists the commands.</li>
       </ul>
